@@ -11,7 +11,7 @@ class Client(models.Model):
 
 class Invoice(models.Model):
     name = models.CharField(max_length=256)
-    comments = models.TextField()
+    comments = models.TextField(blank=True, null=True)
     client = models.ForeignKey(Client, related_name='invoices')
 
     def __str__(self):
