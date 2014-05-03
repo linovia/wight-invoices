@@ -53,3 +53,6 @@ coverage.xml
 docs/_build/
 
 db.sqlite3
+wightinvoices/invoice/static/css/bootstrap.min.css
+wightinvoices/invoice/static/js/bootstrap.min.js
+wightinvoices/invoice/static/js/jquery.min.js
