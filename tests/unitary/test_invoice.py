@@ -37,3 +37,9 @@ def test_net_total():
 def test_gross_total():
     invoice = create_invoice()
     assert invoice.gross_total == Decimal('372.00')
+
+
+@pytest.mark.django_db
+def test_vat_total():
+    invoice = create_invoice()
+    assert invoice.vat_total == Decimal('62.00')

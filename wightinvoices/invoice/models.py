@@ -25,6 +25,10 @@ class Invoice(models.Model):
         return sum(item.net_total for item in self.items.all())
 
     @property
+    def vat_total(self):
+        return sum(item.vat_total for item in self.items.all())
+
+    @property
     def gross_total(self):
         return sum(item.gross_total for item in self.items.all())
 
@@ -50,6 +54,10 @@ class InvoiceItem(models.Model):
     @property
     def net_total(self):
         return (self.quantity * self.amount).quantize(TWOPLACES)
+
+    @property
+    def vat_total(self):
+        return (self.quantity * self.amount * self.vat / Decimal('100')).quantize(TWOPLACES)
 
     @property
     def gross_total(self):
