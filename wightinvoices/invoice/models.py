@@ -1,4 +1,7 @@
 from django.db import models
+from decimal import Decimal
+
+TWOPLACES = Decimal(10) ** -2
 
 
 class Client(models.Model):
@@ -27,3 +30,11 @@ class InvoiceItem(models.Model):
 
     def __str__(self):
         return self.description
+
+    @property
+    def total_rate(self):
+        return 1 + self.vat / Decimal('100.00')
+
+    @property
+    def gross_amount(self):
+        return (self.amount * self.total_rate).quantize(TWOPLACES)
