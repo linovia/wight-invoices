@@ -39,6 +39,9 @@ INSTALLED_APPS = (
 
     # Project applications
     'wightinvoices.invoice',
+
+    # 3rd parties
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
