@@ -20,6 +20,14 @@ class Invoice(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def net_total(self):
+        return sum(item.net_total for item in self.items.all())
+
+    @property
+    def gross_total(self):
+        return sum(item.gross_total for item in self.items.all())
+
 
 class InvoiceItem(models.Model):
     description = models.CharField(max_length=256)
@@ -38,3 +46,11 @@ class InvoiceItem(models.Model):
     @property
     def gross_amount(self):
         return (self.amount * self.total_rate).quantize(TWOPLACES)
+
+    @property
+    def net_total(self):
+        return (self.quantity * self.amount).quantize(TWOPLACES)
+
+    @property
+    def gross_total(self):
+        return (self.quantity * self.gross_amount).quantize(TWOPLACES)
