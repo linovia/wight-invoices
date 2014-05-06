@@ -1,12 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.views import generic
 
-from . import models
+from . import models, forms
 
 
 class InvoiceMixin(object):
     model = models.Invoice
     pk_url_kwarg = 'invoice_id'
+    form_class = forms.Invoice
 
     def get_success_url(self):
         return reverse('invoice-detail', args=[self.object.id])
