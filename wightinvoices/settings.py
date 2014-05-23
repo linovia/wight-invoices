@@ -42,6 +42,7 @@ INSTALLED_APPS = (
 
     # 3rd parties
     'debug_toolbar',
+    'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,3 +88,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Crispy forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
