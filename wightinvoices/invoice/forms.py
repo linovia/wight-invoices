@@ -12,6 +12,7 @@ class Invoice(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(Invoice, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.form_tag = False
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-10'
@@ -19,10 +20,4 @@ class Invoice(forms.ModelForm):
             'name',
             'client',
             'comments',
-            Div(
-                Div(
-                    Submit('submit', 'Submit'),
-                    css_class="col-sm-offset-2 col-sm-10"),
-                css_class="form-group"
-            ),
         )
