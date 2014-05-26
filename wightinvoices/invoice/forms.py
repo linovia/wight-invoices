@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div
+from crispy_forms.layout import Layout, Field
 from . import models
 
 
@@ -21,3 +21,16 @@ class Invoice(forms.ModelForm):
             'client',
             'comments',
         )
+
+
+class InvoiceItem(forms.ModelForm):
+    class Meta:
+        model = models.InvoiceItem
+        fields = ('description', 'quantity', 'vat', 'amount')
+
+class InvoiceItemHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(InvoiceItemHelper, self).__init__(*args, **kwargs)
+        self.form_tag = False
+        self.form_class = 'form-inline'
+        self.template = 'bootstrap/table_inline_formset.html'
