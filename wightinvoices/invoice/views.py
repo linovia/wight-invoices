@@ -5,6 +5,9 @@ from . import models, forms
 
 
 class InvoiceMixin(object):
+    """
+    A mixin that describes Invoice model.
+    """
     model = models.Invoice
     pk_url_kwarg = 'invoice_id'
     form_class = forms.Invoice
