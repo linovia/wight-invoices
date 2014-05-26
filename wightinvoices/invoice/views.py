@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
 from django.views import generic
@@ -47,6 +48,40 @@ class ItemInvoiceProcessMixin(object):
         return self.render_to_response(self.get_context_data(
             form=form, formset=formset,
             formset_helper=forms.InvoiceItemHelper()))
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        formset = self.get_formset()
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+        else:
+            return self.form_invalid(form, formset)
+
+    def form_valid(self, form, formset):
+        """
+        If the formset is valid, save the associated models.
+        """
+        self.object = form.save()
+        items = formset.save(commit=False)
+        for item in items:
+            item.invoice = self.object
+            item.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form, formset):
+        """
+        If the forms are invalid, re-render the context data with the
+        data-filled form, formset and errors.
+        """
+        return self.render_to_response(self.get_context_data(
+            form=form, formset=formset,
+            formset_helper=forms.InvoiceItemHelper()))
+
 
 class CreateMixin(object):
     """
