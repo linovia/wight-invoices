@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 from decimal import Decimal
 
 TWOPLACES = Decimal(10) ** -2
@@ -31,6 +32,9 @@ class Invoice(models.Model):
     @property
     def gross_total(self):
         return sum(item.gross_total for item in self.items.all())
+
+    def get_absolute_url(self):
+        return reverse('invoice-detail', kwargs={'invoice_id': self.id})
 
 
 class InvoiceItem(models.Model):
