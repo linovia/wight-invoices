@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<a href="{% url 'invoice-new' %}" class="btn btn-primary btn-lg active" role="button">New invoice</a>
+
 <div class="row">
     <ul>
     {% for invoice in invoice_list %}
-        <li>{{ invoice.name }}</li>
+        <li><a href="{{ invoice.get_absolute_url }}">{{ invoice.name }}</a></li>
     {% endfor %}
     </ul>
 </div>

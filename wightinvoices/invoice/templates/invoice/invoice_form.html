@@ -1,7 +1,40 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block extra-js %}
+<script type="text/javascript">
+var django = {
+    "jQuery": jQuery
+};
+</script>
+<script type="text/javascript" src="{% static 'admin/js/inlines.js' %}"></script>
+
+{% with formset.prefix as prefix %}
+<script type="text/javascript">
+  (function() {
+    $('.invoiceitem').formset({
+      prefix: '{{ prefix }}',
+      //addText: 'Add',
+      //addCssClass: 'add_child',
+      addButtonId: 'new_line',
+      deleteText: '',
+      deleteCssClass: 'remove_child',
+      emptyCssClass: 'empty-form'
+    });
+  })(django.jQuery);
+</script>
+{% endwith %}
+{% endblock extra-js %}
+
 
 {% block content %}
+<style>
+.empty-form {
+    display: none;
+}
+</style>
 <div class="row">
     <div class="col-md-12">
       <form action="" class="" method="POST">
@@ -27,4 +60,5 @@
       </form>
     </div>
 </div>
+
 {% endblock content %}

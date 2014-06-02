@@ -33,7 +33,7 @@ class ItemInvoiceProcessMixin(object):
         return args
 
     def get_formset(self):
-        InvoiceItemFormSet = modelformset_factory(models.InvoiceItem, form=forms.InvoiceItem)
+        InvoiceItemFormSet = modelformset_factory(models.InvoiceItem, form=forms.InvoiceItem, can_delete=True)
         return InvoiceItemFormSet(**self.get_formset_kwargs())
 
     def get(self, request, *args, **kwargs):
@@ -71,6 +71,8 @@ class ItemInvoiceProcessMixin(object):
         for item in items:
             item.invoice = self.object
             item.save()
+        for item in formset.deleted_objects:
+            item.delete()
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):

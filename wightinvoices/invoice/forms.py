@@ -33,4 +33,4 @@ class InvoiceItemHelper(FormHelper):
         super(InvoiceItemHelper, self).__init__(*args, **kwargs)
         self.form_tag = False
         self.form_class = 'form-inline'
-        self.template = 'bootstrap/table_inline_formset.html'
+        self.template = 'invoice/invoice_form_formset.html'
