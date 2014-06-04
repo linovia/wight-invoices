@@ -22,7 +22,6 @@ def pytest_configure():
             'django.contrib.messages',
             'django.contrib.staticfiles',
 
-            'wightinvoices',
             'wightinvoices.invoice',
 
             'crispy_forms',
