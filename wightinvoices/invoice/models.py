@@ -18,6 +18,11 @@ class Invoice(models.Model):
     comments = models.TextField(blank=True, null=True)
     client = models.ForeignKey(Client, related_name='invoices')
 
+    class Meta:
+        permissions = (
+            ('view_invoice', 'View invoice'),
+        )
+
     def __str__(self):
         return self.name
 
