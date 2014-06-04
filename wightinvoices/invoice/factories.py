@@ -6,6 +6,7 @@ from . import models
 class User(factory.DjangoModelFactory):
     FACTORY_FOR = django.contrib.auth.models.User
 
+    username = factory.Sequence(lambda n: 'user%d' % n)
     first_name = 'John'
     last_name = 'Doe'
     # admin = False
