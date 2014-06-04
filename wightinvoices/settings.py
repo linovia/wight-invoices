@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     # 3rd parties
     'debug_toolbar',
     'crispy_forms',
+    'guardian',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -92,3 +93,13 @@ STATIC_URL = '/static/'
 # Crispy forms
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# Guardian
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)
+
+ANONYMOUS_USER_ID = None
+
