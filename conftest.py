@@ -22,7 +22,14 @@ def pytest_configure():
             'django.contrib.messages',
             'django.contrib.staticfiles',
 
-            'wightinvoices',
             'wightinvoices.invoice',
+
+            'crispy_forms',
+            'guardian',
         ),
+        AUTHENTICATION_BACKENDS=(
+            'django.contrib.auth.backends.ModelBackend', # this is default
+            'guardian.backends.ObjectPermissionBackend',
+        ),
+        ANONYMOUS_USER_ID=None,
     )

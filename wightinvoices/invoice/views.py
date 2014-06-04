@@ -3,6 +3,8 @@ from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
 from django.views import generic
 
+from guardian.mixins import PermissionRequiredMixin
+
 from . import models, forms
 
 
@@ -122,5 +124,7 @@ class InvoiceUpdate(InvoiceMixin, UpdateMixin, ItemInvoiceProcessMixin, generic.
     pass
 
 
-class InvoiceDetail(InvoiceMixin, generic.DetailView):
-    pass
+class InvoiceDetail(PermissionRequiredMixin,
+        InvoiceMixin, generic.DetailView):
+    permission_required = 'view_invoice'
+    return_403 = True
