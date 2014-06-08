@@ -7,8 +7,8 @@ env:
   - DJANGO="https://www.djangoproject.com/download/1.7.b4/tarball/"
 
 install:
-  - pip install -r requirements.txt
   - pip install $DJANGO
+  - pip install -r requirements.txt
   - pip install pytest-django factory-boy
   - export PYTHONPATH=.
 
