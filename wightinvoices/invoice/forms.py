@@ -9,7 +9,9 @@ from . import models
 
 
 class Invoice(forms.ModelForm):
-    cc = forms.ModelMultipleChoiceField(queryset=get_user_model().objects.all())
+    cc = forms.ModelMultipleChoiceField(
+        queryset=get_user_model().objects.all(),
+        required=False)
     class Meta:
         model = models.Invoice
         fields = ('name', 'client', 'cc', 'comments')
