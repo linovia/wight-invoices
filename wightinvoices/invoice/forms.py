@@ -24,6 +24,7 @@ class Invoice(forms.ModelForm):
         self.helper.layout = Layout(
             'name',
             'client',
+            Field('cc', css_class="chosen-select"),
             'comments',
         )
 
@@ -32,6 +33,7 @@ class InvoiceItem(forms.ModelForm):
     class Meta:
         model = models.InvoiceItem
         fields = ('description', 'quantity', 'vat', 'amount')
+
 
 class InvoiceItemHelper(FormHelper):
     def __init__(self, *args, **kwargs):
