@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
 from decimal import Decimal
@@ -16,6 +17,7 @@ class Client(models.Model):
 class Invoice(models.Model):
     name = models.CharField(max_length=256)
     comments = models.TextField(blank=True, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_invoices")
     client = models.ForeignKey(Client, related_name='invoices')
 
     class Meta:

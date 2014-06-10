@@ -7,8 +7,12 @@ def create_invoice():
     client = models.Client(name='a', address='b')
     client.save()
 
+    from django.contrib.auth import get_user_model
+    user, created = get_user_model().objects.get_or_create(username='admin')
+
     invoice = models.Invoice()
     invoice.client = client
+    invoice.owner = user
     invoice.save()
     # Item #1 / 300 net
     item = models.InvoiceItem()

@@ -6,7 +6,8 @@ from guardian.shortcuts import assign_perm
 from wightinvoices.invoice import views, factories, models
 
 
-def create_data():
+@pytest.mark.django_db
+def test_invoice_creation_view():
     client = factories.Client.create()
     data = {
         'client': client.id,
@@ -20,20 +21,22 @@ def create_data():
         'items-0-vat': 20.0,
         'items-0-amount': 1000,
     }
-    return data
-
-
-@pytest.mark.django_db
-def test_invoice_creation_view():
-    data = create_data()
     invoice_count = models.Invoice.objects.count()
     request_factory = RequestFactory()
+    user = factories.User.create()
     request = request_factory.post(reverse('invoice-new'), data=data)
+    request.user = user
     response = views.InvoiceCreation.as_view()(request)
+    # Check the form is valid and we have an extra invoice.
     assert response.status_code == 302
     assert invoice_count + 1 == models.Invoice.objects.count()
+    # Get the latest invoice and check the item's count and description
     invoice = models.Invoice.objects.order_by('-id').all()[0]
     assert invoice.items.count() == 1
+    assert invoice.items.all()[0]. description == 'Computer'
+    # Now make sure the creator has access permission
+    assert user.has_perm('view_invoice', invoice) == True
+    assert invoice.owner == user
 
 
 def create_request(user, give_perm=False):
