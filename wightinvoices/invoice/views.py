@@ -69,7 +69,10 @@ class ItemInvoiceProcessMixin(object):
         """
         If the formset is valid, save the associated models.
         """
-        self.object = form.save()
+        self.object = form.save(commit=False)
+        if not self.object.id:
+            self.object.owner = self.request.user
+        self.object.save()
         assign_perm('view_invoice', self.request.user, self.object)
         items = formset.save(commit=False)
         for item in items:

@@ -36,6 +36,7 @@ def test_invoice_creation_view():
     assert invoice.items.all()[0]. description == 'Computer'
     # Now make sure the creator has access permission
     assert user.has_perm('view_invoice', invoice) == True
+    assert invoice.owner == user
 
 
 def create_request(user, give_perm=False):

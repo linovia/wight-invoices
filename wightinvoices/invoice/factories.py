@@ -33,3 +33,4 @@ class Invoice(factory.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'Invoice #%d' % n)
     client = factory.SubFactory(Client)
+    owner = factory.SubFactory(User)
