@@ -1,4 +1,5 @@
 from django.contrib import admin
+from guardian.admin import GuardedModelAdmin
 from . import models
 
 
@@ -10,7 +11,7 @@ class InvoiceItemInline(admin.TabularInline):
     model = models.InvoiceItem
 
 
-class InvoiceAdmin(admin.ModelAdmin):
+class InvoiceAdmin(GuardedModelAdmin):
     inlines = [
         InvoiceItemInline
     ]
