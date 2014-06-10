@@ -74,6 +74,8 @@ class ItemInvoiceProcessMixin(object):
             self.object.owner = self.request.user
         self.object.save()
         assign_perm('view_invoice', self.request.user, self.object)
+        for cc in form.cleaned_data['cc']:
+            assign_perm('view_invoice', cc, self.object)
         items = formset.save(commit=False)
         for item in items:
             item.invoice = self.object
