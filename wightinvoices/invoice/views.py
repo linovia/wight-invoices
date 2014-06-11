@@ -27,14 +27,28 @@ class ItemInvoiceProcessMixin(object):
     A mixin that renders a form & formset on GET and processes it on POST.
     """
 
+    def get_initial(self):
+        initial = self.initial.copy()
+        # Don't query the permissions if the object isn't created yet
+        if not self.object:
+            return initial
+        permissions = get_users_with_perms(self.object, attach_perms=True)
+        initial['cc'] = [k for k, v in permissions.items() if 'view_invoice' in v]
+        return initial
+
     def get_formset_kwargs(self):
-        args = self.get_form_kwargs()
-        args.pop('instance', None)
-        args['prefix'] = 'items'
-        args['queryset'] = models.InvoiceItem.objects.none()
+        kwargs = {
+            'prefix': 'items',
+            'queryset': models.InvoiceItem.objects.none()
+        }
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
         if self.object:
-            args['queryset'] = self.object.items.all()
-        return args
+            kwargs['queryset'] = self.object.items.all()
+        return kwargs
 
     def get_formset(self):
         InvoiceItemFormSet = modelformset_factory(models.InvoiceItem, form=forms.InvoiceItem, can_delete=True)
