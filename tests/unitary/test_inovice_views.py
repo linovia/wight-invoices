@@ -164,5 +164,7 @@ def test_invoice_can_not_be_viewed_by_unauthorized_user():
 def test_invoice_can_not_be_viewed_by_anonymous_user():
     request = create_request(AnonymousUser(), give_perm=False)
     response = views.InvoiceDetail.as_view()(request, invoice_id=request.invoice.id)
-    assert response.status_code == 403
+    assert response.status_code == 302
+    assert response._headers['location'] == ('Location',
+        '/accounts/login/?next=/invoice/1/')
 
