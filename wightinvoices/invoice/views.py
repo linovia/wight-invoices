@@ -2,6 +2,8 @@ from django.http import HttpResponseRedirect
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views import generic
 
 from guardian.shortcuts import (assign_perm, remove_perm,
@@ -23,6 +25,10 @@ class InvoiceMixin(object):
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'invoice.view_invoice')
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(InvoiceMixin, self).dispatch(*args, **kwargs)
 
 
 class ItemInvoiceProcessMixin(object):
