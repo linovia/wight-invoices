@@ -44,6 +44,38 @@ def test_invoice_creation_view():
 
 
 @pytest.mark.django_db
+def test_invoice_update_view():
+    invoice = factories.Invoice.create()
+    data = {
+        'client': invoice.client.id,
+        'name': 'demo invoice',
+        'items-TOTAL_FORMS': u'1',
+        'items-INITIAL_FORMS': u'0',
+        'items-MIN_NUM_FORMS': u'0',
+        'items-MAX_NUM_FORMS': u'1000',
+        'items-0-id': "",
+        'items-0-description': 'Computer',
+        'items-0-quantity': 1,
+        'items-0-vat': 20.0,
+        'items-0-amount': 1000,
+    }
+    request_factory = RequestFactory()
+    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data=data)
+    request.user = invoice.owner
+    response = views.InvoiceUpdate.as_view()(request, invoice_id=invoice.id)
+    # Check the form is valid and we have an extra invoice.
+    assert response.status_code == 302
+    # Get the latest invoice and check the item's count and description
+    original_invoice = invoice
+    invoice = models.Invoice.objects.get(id=original_invoice.id)
+
+    assert invoice.name == data['name']
+
+    assert invoice.items.count() == 1
+    assert invoice.items.all()[0]. description == 'Computer'
+
+
+@pytest.mark.django_db
 def test_invoice_can_not_be_updated_by_random_user():
     invoice = factories.Invoice.create()
     request_factory = RequestFactory()
