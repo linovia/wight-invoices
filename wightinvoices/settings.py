@@ -103,3 +103,6 @@ AUTHENTICATION_BACKENDS = (
 
 ANONYMOUS_USER_ID = None
 
+DEBUG_TOOLBAR_CONFIG = {
+    'JQUERY_URL': '/static/js/jquery.min.js',
+}

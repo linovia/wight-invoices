@@ -1,10 +1,13 @@
 from django.http import HttpResponseRedirect
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views import generic
 
-from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import (assign_perm, remove_perm,
+        get_users_with_perms, get_objects_for_user)
 
 from . import models, forms
 
@@ -20,20 +23,41 @@ class InvoiceMixin(object):
     def get_success_url(self):
         return reverse('invoice-detail', args=[self.object.id])
 
+    def get_queryset(self):
+        return get_objects_for_user(self.request.user, 'invoice.view_invoice')
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(InvoiceMixin, self).dispatch(*args, **kwargs)
+
 
 class ItemInvoiceProcessMixin(object):
     """
     A mixin that renders a form & formset on GET and processes it on POST.
     """
 
+    def get_initial(self):
+        initial = self.initial.copy()
+        # Don't query the permissions if the object isn't created yet
+        if not self.object:
+            return initial
+        permissions = get_users_with_perms(self.object, attach_perms=True)
+        initial['cc'] = [k for k, v in permissions.items() if 'view_invoice' in v]
+        return initial
+
     def get_formset_kwargs(self):
-        args = self.get_form_kwargs()
-        args.pop('instance', None)
-        args['prefix'] = 'items'
-        args['queryset'] = models.InvoiceItem.objects.none()
+        kwargs = {
+            'prefix': 'items',
+            'queryset': models.InvoiceItem.objects.none()
+        }
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
         if self.object:
-            args['queryset'] = self.object.items.all()
-        return args
+            kwargs['queryset'] = self.object.items.all()
+        return kwargs
 
     def get_formset(self):
         InvoiceItemFormSet = modelformset_factory(models.InvoiceItem, form=forms.InvoiceItem, can_delete=True)
@@ -65,23 +89,47 @@ class ItemInvoiceProcessMixin(object):
         else:
             return self.form_invalid(form, formset)
 
+    def update_permissions(self, new_users):
+        """
+        Assign the invoice's view permissions to the `new_users` list.
+        """
+        # Retrieve the currently authorized users for view_invoice
+        permissions = get_users_with_perms(self.object, attach_perms=True)
+        former_authorized_users = set(k for k, v in permissions.items() if 'view_invoice' in v)
+
+        # Create a new set of authorized users including the owner
+        authorized_users = set(new_users)
+        authorized_users.add(self.request.user)
+
+        # Authorized added users:
+        for user in (authorized_users - former_authorized_users):
+            assign_perm('view_invoice', user, self.object)
+
+        # Revoke removed users:
+        for user in (former_authorized_users - authorized_users):
+            remove_perm('view_invoice', user, self.object)
+
     def form_valid(self, form, formset):
         """
         If the formset is valid, save the associated models.
         """
+        # Set the owner as the current user and save the object
         self.object = form.save(commit=False)
         if not self.object.id:
             self.object.owner = self.request.user
         self.object.save()
-        assign_perm('view_invoice', self.request.user, self.object)
-        for cc in form.cleaned_data['cc']:
-            assign_perm('view_invoice', cc, self.object)
+
+        # Update object's permissions
+        self.update_permissions(form.cleaned_data['cc'])
+
+        # Create / Delete the invoice's items
         items = formset.save(commit=False)
         for item in items:
             item.invoice = self.object
             item.save()
         for item in formset.deleted_objects:
             item.delete()
+
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):
@@ -113,10 +161,14 @@ class UpdateMixin(object):
     """
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
+        if self.object.owner != request.user:
+            raise PermissionDenied()
         return super(UpdateMixin, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        if self.object.owner != request.user:
+            raise PermissionDenied()
         return super(UpdateMixin, self).post(request, *args, **kwargs)
 
 
@@ -127,11 +179,10 @@ class InvoiceList(InvoiceMixin, generic.ListView):
 class InvoiceCreation(InvoiceMixin, CreateMixin, ItemInvoiceProcessMixin, generic.CreateView):
     pass
 
+
 class InvoiceUpdate(InvoiceMixin, UpdateMixin, ItemInvoiceProcessMixin, generic.UpdateView):
     pass
 
 
-class InvoiceDetail(PermissionRequiredMixin,
-        InvoiceMixin, generic.DetailView):
-    permission_required = 'view_invoice'
-    return_403 = True
+class InvoiceDetail(InvoiceMixin, generic.DetailView):
+    pass
