@@ -3,7 +3,7 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
-from  django.core.exceptions import PermissionDenied
+from django.http.response import Http404
 
 from guardian.shortcuts import assign_perm
 
@@ -46,6 +46,7 @@ def test_invoice_creation_view():
 @pytest.mark.django_db
 def test_invoice_update_view():
     invoice = factories.Invoice.create()
+    assign_perm('view_invoice', invoice.owner, invoice)
     data = {
         'client': invoice.client.id,
         'name': 'demo invoice',
@@ -83,11 +84,11 @@ def test_invoice_can_not_be_updated_by_random_user():
     view = views.InvoiceUpdate.as_view()
     request = request_factory.get(reverse('invoice-update', args=[invoice.id]))
     request.user = user
-    with pytest.raises(PermissionDenied):
+    with pytest.raises(Http404):
         view(request, invoice_id=invoice.id)
     request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data={})
     request.user = user
-    with pytest.raises(PermissionDenied):
+    with pytest.raises(Http404):
         view(request, invoice_id=invoice.id)
 
 
@@ -95,6 +96,7 @@ def test_invoice_can_not_be_updated_by_random_user():
 def test_invoice_permission_update():
     view = views.InvoiceUpdate.as_view()
     invoice = factories.Invoice.create()
+    assign_perm('view_invoice', invoice.owner, invoice)
     user1 = factories.User.create()
     user2 = factories.User.create()
     owner = invoice.owner
@@ -156,8 +158,8 @@ def test_invoice_can_be_viewed_by_authorized_user():
 def test_invoice_can_not_be_viewed_by_unauthorized_user():
     unauthorized_user = factories.User.create()
     request = create_request(unauthorized_user, give_perm=False)
-    response = views.InvoiceDetail.as_view()(request, invoice_id=request.invoice.id)
-    assert response.status_code == 403
+    with pytest.raises(Http404):
+        views.InvoiceDetail.as_view()(request, invoice_id=request.invoice.id)
 
 
 @pytest.mark.django_db
