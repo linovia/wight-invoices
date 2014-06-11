@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 
 from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import (assign_perm, remove_perm,
+        get_users_with_perms, get_objects_for_user)
 
 from . import models, forms
 
