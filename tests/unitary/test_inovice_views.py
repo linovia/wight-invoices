@@ -1,8 +1,12 @@
 import pytest
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
+from  django.core.exceptions import PermissionDenied
+
 from guardian.shortcuts import assign_perm
+
 from wightinvoices.invoice import views, factories, models
 
 
@@ -37,6 +41,22 @@ def test_invoice_creation_view():
     # Now make sure the creator has access permission
     assert user.has_perm('view_invoice', invoice) == True
     assert invoice.owner == user
+
+
+@pytest.mark.django_db
+def test_invoice_can_not_be_updated_by_random_user():
+    invoice = factories.Invoice.create()
+    request_factory = RequestFactory()
+    user = factories.User.create()
+    view = views.InvoiceUpdate.as_view()
+    request = request_factory.get(reverse('invoice-update', args=[invoice.id]))
+    request.user = user
+    with pytest.raises(PermissionDenied):
+        view(request, invoice_id=invoice.id)
+    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data={})
+    request.user = user
+    with pytest.raises(PermissionDenied):
+        view(request, invoice_id=invoice.id)
 
 
 @pytest.mark.django_db

@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
 from django.views import generic
 
 from guardian.mixins import PermissionRequiredMixin
@@ -152,10 +153,14 @@ class UpdateMixin(object):
     """
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
+        if self.object.owner != request.user:
+            raise PermissionDenied()
         return super(UpdateMixin, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        if self.object.owner != request.user:
+            raise PermissionDenied()
         return super(UpdateMixin, self).post(request, *args, **kwargs)
 
 
