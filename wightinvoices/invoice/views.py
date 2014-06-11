@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.views import generic
 
-from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import (assign_perm, remove_perm,
         get_users_with_perms, get_objects_for_user)
 
@@ -21,6 +20,9 @@ class InvoiceMixin(object):
 
     def get_success_url(self):
         return reverse('invoice-detail', args=[self.object.id])
+
+    def get_queryset(self):
+        return get_objects_for_user(self.request.user, 'invoice.view_invoice')
 
 
 class ItemInvoiceProcessMixin(object):
@@ -171,11 +173,10 @@ class InvoiceList(InvoiceMixin, generic.ListView):
 class InvoiceCreation(InvoiceMixin, CreateMixin, ItemInvoiceProcessMixin, generic.CreateView):
     pass
 
+
 class InvoiceUpdate(InvoiceMixin, UpdateMixin, ItemInvoiceProcessMixin, generic.UpdateView):
     pass
 
 
-class InvoiceDetail(PermissionRequiredMixin,
-        InvoiceMixin, generic.DetailView):
-    permission_required = 'view_invoice'
-    return_403 = True
+class InvoiceDetail(InvoiceMixin, generic.DetailView):
+    pass
