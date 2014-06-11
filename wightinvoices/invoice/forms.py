@@ -1,4 +1,3 @@
-from django.conf import settings
 from django import forms
 from django.contrib.auth import get_user_model
 
@@ -9,7 +8,9 @@ from . import models
 
 
 class Invoice(forms.ModelForm):
-    cc = forms.ModelMultipleChoiceField(queryset=get_user_model().objects.all())
+    cc = forms.ModelMultipleChoiceField(
+        queryset=get_user_model().objects.all(),
+        required=False)
     class Meta:
         model = models.Invoice
         fields = ('name', 'client', 'cc', 'comments')

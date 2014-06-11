@@ -33,3 +33,6 @@ def pytest_configure():
         ),
         ANONYMOUS_USER_ID=None,
     )
+
+    import django
+    django.setup()
