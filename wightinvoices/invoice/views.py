@@ -65,23 +65,47 @@ class ItemInvoiceProcessMixin(object):
         else:
             return self.form_invalid(form, formset)
 
+    def update_permissions(self, new_users):
+        """
+        Assign the invoice's view permissions to the `new_users` list.
+        """
+        # Retrieve the currently authorized users for view_invoice
+        permissions = get_users_with_perms(self.object, attach_perms=True)
+        former_authorized_users = set(k for k, v in permissions.items() if 'view_invoice' in v)
+
+        # Create a new set of authorized users including the owner
+        authorized_users = set(new_users)
+        authorized_users.add(self.request.user)
+
+        # Authorized added users:
+        for user in (authorized_users - former_authorized_users):
+            assign_perm('view_invoice', user, self.object)
+
+        # Revoke removed users:
+        for user in (former_authorized_users - authorized_users):
+            remove_perm('view_invoice', user, self.object)
+
     def form_valid(self, form, formset):
         """
         If the formset is valid, save the associated models.
         """
+        # Set the owner as the current user and save the object
         self.object = form.save(commit=False)
         if not self.object.id:
             self.object.owner = self.request.user
         self.object.save()
-        assign_perm('view_invoice', self.request.user, self.object)
-        for cc in form.cleaned_data['cc']:
-            assign_perm('view_invoice', cc, self.object)
+
+        # Update object's permissions
+        self.update_permissions(form.cleaned_data['cc'])
+
+        # Create / Delete the invoice's items
         items = formset.save(commit=False)
         for item in items:
             item.invoice = self.object
             item.save()
         for item in formset.deleted_objects:
             item.delete()
+
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):

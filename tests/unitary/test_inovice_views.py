@@ -39,6 +39,47 @@ def test_invoice_creation_view():
     assert invoice.owner == user
 
 
+@pytest.mark.django_db
+def test_invoice_permission_update():
+    view = views.InvoiceUpdate.as_view()
+    invoice = factories.Invoice.create()
+    user1 = factories.User.create()
+    user2 = factories.User.create()
+    owner = invoice.owner
+    data = {
+        'client': invoice.client.id,
+        'name': 'demo invoice',
+        'cc': [user1.id],
+        'items-TOTAL_FORMS': u'1',
+        'items-INITIAL_FORMS': u'0',
+        'items-MIN_NUM_FORMS': u'0',
+        'items-MAX_NUM_FORMS': u'1000',
+        'items-0-id': "",
+        'items-0-description': 'Computer',
+        'items-0-quantity': 1,
+        'items-0-vat': 20.0,
+        'items-0-amount': 1000,
+    }
+    request_factory = RequestFactory()
+
+    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data=data)
+    request.user = invoice.owner
+    response = view(request, invoice_id=invoice.id)
+    assert response.status_code == 302
+    assert owner.has_perm('view_invoice', invoice)
+    assert user1.has_perm('view_invoice', invoice)
+    assert not user2.has_perm('view_invoice', invoice)
+
+    data['cc'] = [user2.id]
+    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data=data)
+    request.user = invoice.owner
+    response = view(request, invoice_id=invoice.id)
+    assert response.status_code == 302
+    assert owner.has_perm('view_invoice', invoice)
+    assert not user1.has_perm('view_invoice', invoice)
+    assert user2.has_perm('view_invoice', invoice)
+
+
 def create_request(user, give_perm=False):
     invoice = factories.Invoice.create()
     if give_perm:
