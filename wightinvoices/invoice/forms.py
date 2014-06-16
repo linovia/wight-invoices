@@ -13,7 +13,7 @@ class Invoice(forms.ModelForm):
         required=False)
     class Meta:
         model = models.Invoice
-        fields = ('name', 'client', 'cc', 'comments')
+        fields = ('name', 'client', 'cc', 'comments', 'status')
 
     def __init__(self, *args, **kwargs):
         super(Invoice, self).__init__(*args, **kwargs)
@@ -27,6 +27,7 @@ class Invoice(forms.ModelForm):
             'client',
             Field('cc', css_class="chosen-select"),
             'comments',
+            'status',
         )
 
 

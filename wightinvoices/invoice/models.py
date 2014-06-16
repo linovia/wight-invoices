@@ -1,9 +1,18 @@
+from decimal import Decimal
 from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
-from decimal import Decimal
+from django.utils.translation import ugettext_lazy as _
 
 TWOPLACES = Decimal(10) ** -2
+
+
+INVOICE_STATUS = (
+    ('draft', _('Draft')),
+    ('unpaid', _('Unpaid')),
+    ('canceled', _('Canceled')),
+    ('paid', _('Paid')),
+)
 
 
 class Client(models.Model):
@@ -19,6 +28,7 @@ class Invoice(models.Model):
     comments = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_invoices")
     client = models.ForeignKey(Client, related_name='invoices')
+    status = models.CharField(max_length=64, choices=INVOICE_STATUS, default='unpaid')
 
     class Meta:
         permissions = (
