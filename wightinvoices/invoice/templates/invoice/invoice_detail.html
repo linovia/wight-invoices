@@ -6,7 +6,9 @@
         <h1>{{ invoice.name }}</h1>
       </div>
       <div class="col-md-2">
+        {% if request.user == invoice.owner %}
         <a href="{% url 'invoice-update' invoice.id %}" class="btn btn-primary btn-lg btn-block" role="button">Update invoice</a>
+        {% endif %}
     </div>
 </div>
 
