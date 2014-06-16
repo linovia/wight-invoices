@@ -28,7 +28,7 @@ class Invoice(models.Model):
     comments = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_invoices")
     client = models.ForeignKey(Client, related_name='invoices')
-    status = models.CharField(max_length=64, choices=INVOICE_STATUS, default='unpaid')
+    status = models.CharField(max_length=64, choices=INVOICE_STATUS, default='draft')
 
     class Meta:
         permissions = (

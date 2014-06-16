@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='invoice',
             name='status',
-            field=models.CharField(max_length=64, default='unpaid', choices=[('draft', 'Draft'), ('unpaid', 'Unpaid'), ('canceled', 'Canceled'), ('paid', 'Paid')]),
+            field=models.CharField(max_length=64, default='draft', choices=[('draft', 'Draft'), ('unpaid', 'Unpaid'), ('canceled', 'Canceled'), ('paid', 'Paid')]),
             preserve_default=True,
         ),
     ]
