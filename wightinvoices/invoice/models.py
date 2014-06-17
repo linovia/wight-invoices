@@ -23,17 +23,14 @@ class Client(models.Model):
         return self.name
 
 
-class Invoice(models.Model):
+class BaseInvoice(models.Model):
     name = models.CharField(max_length=256)
     comments = models.TextField(blank=True, null=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_invoices")
-    client = models.ForeignKey(Client, related_name='invoices')
-    status = models.CharField(max_length=64, choices=INVOICE_STATUS, default='draft')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_%(class)ss")
+    client = models.ForeignKey(Client, related_name='%(class)s')
 
     class Meta:
-        permissions = (
-            ('view_invoice', 'View invoice'),
-        )
+        abstract = True
 
     def __str__(self):
         return self.name
@@ -54,12 +51,14 @@ class Invoice(models.Model):
         return reverse('invoice-detail', kwargs={'invoice_id': self.id})
 
 
-class InvoiceItem(models.Model):
+class BaseItem(models.Model):
     description = models.CharField(max_length=256)
     quantity = models.IntegerField()
     vat = models.DecimalField(max_digits=4, decimal_places=2)
     amount = models.DecimalField(max_digits=11, decimal_places=2)
-    invoice = models.ForeignKey(Invoice, related_name='items')
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.description
@@ -83,3 +82,15 @@ class InvoiceItem(models.Model):
     @property
     def gross_total(self):
         return (self.quantity * self.gross_amount).quantize(TWOPLACES)
+
+
+class Invoice(BaseInvoice):
+    status = models.CharField(max_length=64, choices=INVOICE_STATUS, default='draft')
+
+    class Meta:
+        permissions = (
+            ('view_invoice', 'View invoice'),
+        )
+
+class InvoiceItem(BaseItem):
+    invoice = models.ForeignKey(Invoice, related_name='items')
