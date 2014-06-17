@@ -16,6 +16,7 @@ def test_invoice_creation_view():
     data = {
         'client': client.id,
         'name': 'demo invoice',
+        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',
@@ -50,6 +51,7 @@ def test_invoice_update_view():
     data = {
         'client': invoice.client.id,
         'name': 'demo invoice',
+        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',
@@ -103,6 +105,7 @@ def test_invoice_permission_update():
     data = {
         'client': invoice.client.id,
         'name': 'demo invoice',
+        'status': 'draft',
         'cc': [user1.id],
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
