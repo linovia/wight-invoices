@@ -15,6 +15,13 @@ INVOICE_STATUS = (
 )
 
 
+ESTIMATE_STATUS = (
+    ('draft', _('Draft')),
+    ('accepted', _('Accepted')),
+    ('refused', _('Refused')),
+)
+
+
 class Client(models.Model):
     name = models.CharField(max_length=64)
     address = models.TextField()
@@ -92,5 +99,19 @@ class Invoice(BaseInvoice):
             ('view_invoice', 'View invoice'),
         )
 
+
 class InvoiceItem(BaseItem):
     invoice = models.ForeignKey(Invoice, related_name='items')
+
+
+class Estimate(BaseInvoice):
+    status = models.CharField(max_length=64, choices=ESTIMATE_STATUS, default='draft')
+
+    class Meta:
+        permissions = (
+            ('view_estimate', 'View estimate'),
+        )
+
+
+class EstimateItem(BaseItem):
+    estimate = models.ForeignKey(Estimate, related_name='items')
