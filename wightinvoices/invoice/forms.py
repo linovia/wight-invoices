@@ -13,7 +13,7 @@ class Invoice(forms.ModelForm):
         required=False)
     class Meta:
         model = models.Invoice
-        fields = ('name', 'client', 'cc', 'comments')
+        fields = ('name', 'client', 'cc', 'comments', 'status')
 
     def __init__(self, *args, **kwargs):
         super(Invoice, self).__init__(*args, **kwargs)
@@ -27,6 +27,7 @@ class Invoice(forms.ModelForm):
             'client',
             Field('cc', css_class="chosen-select"),
             'comments',
+            'status',
         )
 
 
@@ -42,3 +43,13 @@ class InvoiceItemHelper(FormHelper):
         self.form_tag = False
         self.form_class = 'form-inline'
         self.template = 'invoice/invoice_form_formset.html'
+
+
+class Estimate(Invoice):
+    class Meta(Invoice.Meta):
+        model = models.Estimate
+
+
+class EstimateItem(InvoiceItem):
+    class Meta(InvoiceItem.Meta):
+        model = models.EstimateItem

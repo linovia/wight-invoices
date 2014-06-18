@@ -16,6 +16,7 @@ def test_invoice_creation_view():
     data = {
         'client': client.id,
         'name': 'demo invoice',
+        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',
@@ -50,6 +51,7 @@ def test_invoice_update_view():
     data = {
         'client': invoice.client.id,
         'name': 'demo invoice',
+        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',
@@ -61,7 +63,8 @@ def test_invoice_update_view():
         'items-0-amount': 1000,
     }
     request_factory = RequestFactory()
-    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data=data)
+    request = request_factory.post(reverse('invoice-update',
+        kwargs={'invoice_id': invoice.id}), data=data)
     request.user = invoice.owner
     response = views.InvoiceUpdate.as_view()(request, invoice_id=invoice.id)
     # Check the form is valid and we have an extra invoice.
@@ -82,11 +85,13 @@ def test_invoice_can_not_be_updated_by_random_user():
     request_factory = RequestFactory()
     user = factories.User.create()
     view = views.InvoiceUpdate.as_view()
-    request = request_factory.get(reverse('invoice-update', args=[invoice.id]))
+    request = request_factory.get(reverse('invoice-update',
+        kwargs={'invoice_id': invoice.id}))
     request.user = user
     with pytest.raises(Http404):
         view(request, invoice_id=invoice.id)
-    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data={})
+    request = request_factory.post(reverse('invoice-update',
+        kwargs={'invoice_id': invoice.id}), data={})
     request.user = user
     with pytest.raises(Http404):
         view(request, invoice_id=invoice.id)
@@ -103,6 +108,7 @@ def test_invoice_permission_update():
     data = {
         'client': invoice.client.id,
         'name': 'demo invoice',
+        'status': 'draft',
         'cc': [user1.id],
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
@@ -116,7 +122,8 @@ def test_invoice_permission_update():
     }
     request_factory = RequestFactory()
 
-    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data=data)
+    request = request_factory.post(reverse('invoice-update',
+        kwargs={'invoice_id': invoice.id}), data=data)
     request.user = invoice.owner
     response = view(request, invoice_id=invoice.id)
     assert response.status_code == 302
@@ -125,7 +132,8 @@ def test_invoice_permission_update():
     assert not user2.has_perm('view_invoice', invoice)
 
     data['cc'] = [user2.id]
-    request = request_factory.post(reverse('invoice-update', args=[invoice.id]), data=data)
+    request = request_factory.post(reverse('invoice-update',
+        kwargs={'invoice_id': invoice.id}), data=data)
     request.user = invoice.owner
     response = view(request, invoice_id=invoice.id)
     assert response.status_code == 302
@@ -139,7 +147,8 @@ def create_request(user, give_perm=False):
     if give_perm:
         assign_perm('view_invoice', user, invoice)
     request_factory = RequestFactory()
-    request = request_factory.get(reverse('invoice-detail', args=[invoice.id]))
+    request = request_factory.get(reverse('invoice-detail',
+        kwargs={'invoice_id': invoice.id}))
     request.user = user
     request.invoice = invoice
 
