@@ -34,3 +34,20 @@ class Invoice(factory.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'Invoice #%d' % n)
     client = factory.SubFactory(Client)
     owner = factory.SubFactory(User)
+
+
+class EstimateItem(factory.DjangoModelFactory):
+    FACTORY_FOR = models.EstimateItem
+
+    description = factory.Sequence(lambda n: 'Item #%d' % n)
+    quantity = 2
+    vat = 20.0
+    amount = 100.0
+
+
+class Estimate(factory.DjangoModelFactory):
+    FACTORY_FOR = models.Estimate
+
+    name = factory.Sequence(lambda n: 'Estimate #%d' % n)
+    client = factory.SubFactory(Client)
+    owner = factory.SubFactory(User)
