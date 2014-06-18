@@ -17,6 +17,7 @@ INVOICE_STATUS = (
 
 ESTIMATE_STATUS = (
     ('draft', _('Draft')),
+    ('sent', _('Sent')),
     ('accepted', _('Accepted')),
     ('refused', _('Refused')),
 )
@@ -111,6 +112,9 @@ class Estimate(BaseInvoice):
         permissions = (
             ('view_estimate', 'View estimate'),
         )
+
+    def is_published(self):
+        return self.status in ('sent',)
 
 
 class EstimateItem(BaseItem):

@@ -59,4 +59,11 @@
     </div>
 </div>
 
+{% if estimate.is_published %}
+<div class="well well-sm">
+  <a href="" class="btn btn-success btn-lg" role="button">Accept</a>
+  <a href="" class="btn btn-danger btn-lg" role="button">Refuse</a>
+</div>
+{% endif %}
+
 {% endblock content %}
