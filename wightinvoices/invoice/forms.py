@@ -43,3 +43,13 @@ class InvoiceItemHelper(FormHelper):
         self.form_tag = False
         self.form_class = 'form-inline'
         self.template = 'invoice/invoice_form_formset.html'
+
+
+class Estimate(Invoice):
+    class Meta(Invoice.Meta):
+        model = models.Estimate
+
+
+class EstimateItem(InvoiceItem):
+    class Meta(InvoiceItem.Meta):
+        model = models.EstimateItem
