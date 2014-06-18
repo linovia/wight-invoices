@@ -35,6 +35,10 @@ class ItemInvoiceProcessMixin(object):
     """
     A mixin that renders a form & formset on GET and processes it on POST.
     """
+    item_model = models.InvoiceItem
+    item_form = forms.InvoiceItem
+    item_fk = 'invoice'
+    view_permission = 'view_invoice'
 
     def get_initial(self):
         initial = self.initial.copy()
@@ -42,13 +46,13 @@ class ItemInvoiceProcessMixin(object):
         if not self.object:
             return initial
         permissions = get_users_with_perms(self.object, attach_perms=True)
-        initial['cc'] = [k for k, v in permissions.items() if 'view_invoice' in v]
+        initial['cc'] = [k for k, v in permissions.items() if self.view_permission in v]
         return initial
 
     def get_formset_kwargs(self):
         kwargs = {
             'prefix': 'items',
-            'queryset': models.InvoiceItem.objects.none()
+            'queryset': self.item_model.objects.none()
         }
         if self.request.method in ('POST', 'PUT'):
             kwargs.update({
@@ -60,8 +64,8 @@ class ItemInvoiceProcessMixin(object):
         return kwargs
 
     def get_formset(self):
-        InvoiceItemFormSet = modelformset_factory(models.InvoiceItem, form=forms.InvoiceItem, can_delete=True)
-        return InvoiceItemFormSet(**self.get_formset_kwargs())
+        ItemFormSet = modelformset_factory(self.item_model, form=self.item_form, can_delete=True)
+        return ItemFormSet(**self.get_formset_kwargs())
 
     def get(self, request, *args, **kwargs):
         """
@@ -95,7 +99,7 @@ class ItemInvoiceProcessMixin(object):
         """
         # Retrieve the currently authorized users for view_invoice
         permissions = get_users_with_perms(self.object, attach_perms=True)
-        former_authorized_users = set(k for k, v in permissions.items() if 'view_invoice' in v)
+        former_authorized_users = set(k for k, v in permissions.items() if self.view_permission in v)
 
         # Create a new set of authorized users including the owner
         authorized_users = set(new_users)
@@ -103,11 +107,11 @@ class ItemInvoiceProcessMixin(object):
 
         # Authorized added users:
         for user in (authorized_users - former_authorized_users):
-            assign_perm('view_invoice', user, self.object)
+            assign_perm(self.view_permission, user, self.object)
 
         # Revoke removed users:
         for user in (former_authorized_users - authorized_users):
-            remove_perm('view_invoice', user, self.object)
+            remove_perm(self.view_permission, user, self.object)
 
     def form_valid(self, form, formset):
         """
@@ -125,7 +129,7 @@ class ItemInvoiceProcessMixin(object):
         # Create / Delete the invoice's items
         items = formset.save(commit=False)
         for item in items:
-            item.invoice = self.object
+            setattr(item, self.item_fk, self.object)
             item.save()
         for item in formset.deleted_objects:
             item.delete()
@@ -186,3 +190,50 @@ class InvoiceUpdate(InvoiceMixin, UpdateMixin, ItemInvoiceProcessMixin, generic.
 
 class InvoiceDetail(InvoiceMixin, generic.DetailView):
     pass
+
+
+#
+# Estimates
+#
+
+class EstimateMixin(object):
+    """
+    A mixin that describes Estimate model.
+    """
+    model = models.Estimate
+    pk_url_kwarg = 'estimate_id'
+    form_class = forms.Estimate
+
+    def get_success_url(self):
+        return reverse('estimate-detail', args=[self.object.id])
+
+    def get_queryset(self):
+        return get_objects_for_user(self.request.user, 'invoice.view_estimate')
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(EstimateMixin, self).dispatch(*args, **kwargs)
+
+
+class ItemEstimateProcessMixin(ItemInvoiceProcessMixin):
+    item_model = models.EstimateItem
+    item_form = forms.EstimateItem
+    item_fk = 'estimate'
+    view_permission = 'view_estimate'
+
+
+class EstimateList(EstimateMixin, generic.ListView):
+    pass
+
+
+class EstimateCreation(EstimateMixin, CreateMixin, ItemEstimateProcessMixin, generic.CreateView):
+    pass
+
+
+class EstimateUpdate(EstimateMixin, UpdateMixin, ItemEstimateProcessMixin, generic.UpdateView):
+    pass
+
+
+class EstimateDetail(EstimateMixin, generic.DetailView):
+    pass
+
