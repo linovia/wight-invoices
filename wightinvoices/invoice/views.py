@@ -237,3 +237,10 @@ class EstimateUpdate(EstimateMixin, UpdateMixin, ItemEstimateProcessMixin, gener
 class EstimateDetail(EstimateMixin, generic.DetailView):
     pass
 
+
+class EstimateAccept(EstimateMixin, generic.RedirectView):
+    pattern_name = 'estimate-detail'
+
+
+class EstimateRefuse(EstimateMixin, generic.RedirectView):
+    pattern_name = 'estimate-detail'
