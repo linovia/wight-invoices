@@ -17,5 +17,16 @@ class InvoiceAdmin(GuardedModelAdmin):
     ]
 
 
+class EstimateItemInline(admin.TabularInline):
+    model = models.EstimateItem
+
+
+class EstimateAdmin(GuardedModelAdmin):
+    inlines = [
+        EstimateItemInline
+    ]
+
+
 admin.site.register(models.Client, ClientAdmin)
 admin.site.register(models.Invoice, InvoiceAdmin)
+admin.site.register(models.Estimate, EstimateAdmin)
