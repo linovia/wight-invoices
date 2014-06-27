@@ -1,13 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href="{% url 'invoice-new' %}" class="btn btn-primary btn-lg active" role="button">New invoice</a>
-
 <div class="row">
-    <ul>
-    {% for invoice in invoice_list %}
-        <li><a href="{{ invoice.get_absolute_url }}">{{ invoice.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Opened invoices</h3>
+            </div>
+            <div class="panel-body invoice-list">
+                <table class="table table-striped">
+                    <tbody>
+                        {% for invoice in invoice_list %}
+                        <tr>
+                            <td>{{ invoice.status }}</td>
+                            <td>{{ invoice.client }}</td>
+                            <td><a href="{{ invoice.get_absolute_url }}">{{ invoice.name }}</a></td>
+                            <td>#{{ invoice.id }}</td>
+                            <td>{{ invoice.net_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="{% url 'invoice-new' %}" class="btn btn-primary btn-lg active btn-block" role="button">New invoice</a>
+            </div>
+        </div>
+        &nbsp;
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">XX invoices</h3>
+            </div>
+            <div class="panel-body">
+                <p>total: XX €</p>
+                <p>late: XX €</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock content %}
