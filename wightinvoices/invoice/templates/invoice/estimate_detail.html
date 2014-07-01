@@ -59,11 +59,15 @@
     </div>
 </div>
 
-{% if estimate.is_published %}
+
 <div class="well well-sm">
-  <a href="" class="btn btn-success btn-lg" role="button">Accept</a>
-  <a href="" class="btn btn-danger btn-lg" role="button">Refuse</a>
-</div>
+{% if estimate.is_published %}
+  <a href="{% url 'estimate-accept' estimate.id %}" class="btn btn-success btn-lg" role="button">Accept</a>
+  <a href="{% url 'estimate-refuse' estimate.id %}" class="btn btn-danger btn-lg" role="button">Refuse</a>
 {% endif %}
+{% if estimate.is_draft %}
+  <a href="{% url 'estimate-validate' estimate.id %}" class="btn btn-success btn-lg" role="button">Validate</a>
+{% endif %}
+</div>
 
 {% endblock content %}

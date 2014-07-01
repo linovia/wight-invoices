@@ -113,8 +113,11 @@ class Estimate(BaseInvoice):
             ('view_estimate', 'View estimate'),
         )
 
+    def is_draft(self):
+        return self.status == 'draft'
+
     def is_published(self):
-        return self.status in ('sent',)
+        return self.status == 'sent'
 
 
 class EstimateItem(BaseItem):

@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 
 from guardian.shortcuts import (assign_perm, remove_perm,
         get_users_with_perms, get_objects_for_user)
@@ -176,6 +177,22 @@ class UpdateMixin(object):
         return super(UpdateMixin, self).post(request, *args, **kwargs)
 
 
+class StatusChangeMixin(SingleObjectMixin):
+    """
+    Mixin that will change an object's status
+    """
+    status = None
+    from_statuses = None
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        # if we have no status or our initial status is allowed
+        if not self.from_statuses or obj.status in self.from_statuses:
+            obj.status = self.status
+            obj.save()
+        return super(StatusChangeMixin, self).get(request, *args, **kwargs)
+
+
 class InvoiceList(InvoiceMixin, generic.ListView):
     pass
 
@@ -237,3 +254,18 @@ class EstimateUpdate(EstimateMixin, UpdateMixin, ItemEstimateProcessMixin, gener
 class EstimateDetail(EstimateMixin, generic.DetailView):
     pass
 
+
+class EstimateValidate(EstimateMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'estimate-detail'
+    status = 'sent'
+
+class EstimateAccept(EstimateMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'estimate-detail'
+    status = 'accepted'
+    from_statuses = ['sent']
+
+
+class EstimateRefuse(EstimateMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'estimate-detail'
+    status = 'refused'
+    from_statuses = ['sent']

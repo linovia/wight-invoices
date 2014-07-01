@@ -9,7 +9,7 @@ env:
 install:
   - pip install $DJANGO
   - pip install -r requirements.txt
-  - pip install pytest-django factory-boy
+  - pip install pytest-django factory-boy lxml
   - export PYTHONPATH=.
 
 script:
