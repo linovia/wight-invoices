@@ -35,6 +35,9 @@ def pytest_configure():
         ),
         ANONYMOUS_USER_ID=None,
         CRISPY_TEMPLATE_PACK='bootstrap3',
+        PASSWORD_HASHERS = (
+            'tests.custom_password_hashers.ClearPasswordHasher',
+        ),
     )
 
     import django
