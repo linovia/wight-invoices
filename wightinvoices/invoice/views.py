@@ -140,7 +140,7 @@ class ItemInvoiceProcessMixin(object):
             user=self.request.user,
             content_object=self.object,
             object_repr=str(self.object),
-            action='new',
+            action=self.ACTION,
         )
 
         return HttpResponseRedirect(self.get_success_url())
@@ -159,6 +159,8 @@ class CreateMixin(object):
     """
     Base mixin for creating an new object instance.
     """
+    ACTION = 'created'
+
     def get(self, request, *args, **kwargs):
         self.object = None
         return super(CreateMixin, self).get(request, *args, **kwargs)
@@ -172,6 +174,7 @@ class UpdateMixin(object):
     """
     Base mixin for updating an existing object.
     """
+    ACTION = 'updated'
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.owner != request.user:

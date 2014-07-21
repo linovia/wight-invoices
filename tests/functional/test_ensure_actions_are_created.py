@@ -9,7 +9,7 @@ from wightinvoices.history.models import History
 
 
 @pytest.mark.django_db
-def test_action_created_for_new_estimate():
+def test_action_created_for_estimates():
     client = factories.Client.create()
     owner = factories.User.create(password="clear$abc$toto")
     test_client = Client()
@@ -37,7 +37,25 @@ def test_action_created_for_new_estimate():
 
     # Make sure we have a new estimate creation action
     last_action = History.objects.all().order_by('-id')[0]
-    assert last_action.action == 'new'
+    assert last_action.action == 'created'
     assert last_action.content_type == ContentType.objects.get(app_label="invoice", model="estimate")
     assert last_action.object_id == '1'
+    assert last_action.user == owner
 
+    estimate = models.Estimate.objects.all().order_by('-id')[0]
+
+    # Now update the estimate
+    data['items-à-quantity'] = 2
+    response = test_client.post(reverse('estimate-update', kwargs={'estimate_id': estimate.id}), data=data, follow=True)
+
+    # Check the form is valid
+    # response.redirect_chain
+    assert response.status_code == 200
+    assert hasattr(response, 'redirect_chain')
+
+    # Make sure we have a new estimate creation action
+    last_action = History.objects.all().order_by('-id')[0]
+    assert last_action.action == 'updated'
+    assert last_action.content_type == ContentType.objects.get(app_label="invoice", model="estimate")
+    assert last_action.object_id == '1'
+    assert last_action.user == owner
