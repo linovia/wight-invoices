@@ -114,6 +114,9 @@ class Estimate(BaseInvoice):
             ('view_estimate', 'View estimate'),
         )
 
+    def get_absolute_url(self):
+        return reverse('estimate-detail', kwargs={'estimate_id': self.id})
+
     def is_draft(self):
         return self.status == 'draft'
 
