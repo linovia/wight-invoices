@@ -16,7 +16,7 @@ def test_action_created_for_estimates():
     assert test_client.login(username=owner.username, password="toto")
     data = {
         'client': client.id,
-        'name': 'workflow estimate',
+        'name': "Estimate's history",
         'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
