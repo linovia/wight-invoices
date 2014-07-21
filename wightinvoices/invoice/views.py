@@ -11,6 +11,7 @@ from guardian.shortcuts import (assign_perm, remove_perm,
         get_users_with_perms, get_objects_for_user)
 
 from . import models, forms
+from wightinvoices.history.models import History
 
 
 class InvoiceMixin(object):
@@ -135,6 +136,13 @@ class ItemInvoiceProcessMixin(object):
         for item in formset.deleted_objects:
             item.delete()
 
+        History.objects.create(
+            user=self.request.user,
+            content_object=self.object,
+            object_repr=str(self.object),
+            action=self.ACTION,
+        )
+
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):
@@ -151,6 +159,8 @@ class CreateMixin(object):
     """
     Base mixin for creating an new object instance.
     """
+    ACTION = 'created'
+
     def get(self, request, *args, **kwargs):
         self.object = None
         return super(CreateMixin, self).get(request, *args, **kwargs)
@@ -164,6 +174,7 @@ class UpdateMixin(object):
     """
     Base mixin for updating an existing object.
     """
+    ACTION = 'updated'
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.owner != request.user:
@@ -190,6 +201,12 @@ class StatusChangeMixin(SingleObjectMixin):
         if not self.from_statuses or obj.status in self.from_statuses:
             obj.status = self.status
             obj.save()
+            History.objects.create(
+                user=self.request.user,
+                content_object=obj,
+                object_repr=str(obj),
+                action=self.status,
+            )
         return super(StatusChangeMixin, self).get(request, *args, **kwargs)
 
 

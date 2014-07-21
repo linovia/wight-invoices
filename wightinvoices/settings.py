@@ -40,6 +40,7 @@ INSTALLED_APPS = (
 
     # Project applications
     'wightinvoices.invoice',
+    'wightinvoices.history',
 
     # 3rd parties
     'debug_toolbar',

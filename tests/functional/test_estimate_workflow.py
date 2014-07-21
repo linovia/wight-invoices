@@ -13,7 +13,7 @@ def test_invoice_update_view():
     client = factories.Client.create()
     owner = factories.User.create(password="clear$abc$toto")
     test_client = Client()
-    test_client.login(username=owner.username, password="toto")
+    assert test_client.login(username=owner.username, password="toto")
     data = {
         'client': client.id,
         'name': 'workflow estimate',
