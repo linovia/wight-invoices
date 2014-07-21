@@ -17,7 +17,6 @@ def test_invoice_update_view():
     data = {
         'client': client.id,
         'name': 'workflow estimate',
-        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',

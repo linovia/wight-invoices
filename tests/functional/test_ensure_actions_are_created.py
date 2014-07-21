@@ -17,7 +17,6 @@ def test_action_created_for_estimates():
     data = {
         'client': client.id,
         'name': "Estimate's history",
-        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',
@@ -108,7 +107,6 @@ def test_action_created_for_invoices():
     data = {
         'client': client.id,
         'name': "Invoice's history",
-        'status': 'draft',
         'items-TOTAL_FORMS': u'1',
         'items-INITIAL_FORMS': u'0',
         'items-MIN_NUM_FORMS': u'0',
