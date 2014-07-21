@@ -226,6 +226,24 @@ class InvoiceDetail(InvoiceMixin, generic.DetailView):
     pass
 
 
+class InvoiceValidate(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'invoice-detail'
+    status = 'unpaid'
+    from_statuses = ['draft']
+
+
+class InvoicePaid(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'invoice-detail'
+    status = 'paid'
+    from_statuses = ['unpaid', 'late']
+
+
+class InvoiceCanceled(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'invoice-detail'
+    status = 'canceled'
+    from_statuses = ['draft']
+
+
 #
 # Estimates
 #

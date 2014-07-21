@@ -10,8 +10,9 @@ TWOPLACES = Decimal(10) ** -2
 INVOICE_STATUS = (
     ('draft', _('Draft')),
     ('unpaid', _('Unpaid')),
-    ('canceled', _('Canceled')),
+    ('late', _('Late')),
     ('paid', _('Paid')),
+    ('canceled', _('Canceled')),
 )
 
 
