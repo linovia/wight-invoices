@@ -9,7 +9,7 @@ from wightinvoices.invoice import factories, models
 
 
 @pytest.mark.django_db
-def test_invoice_update_view():
+def test_estimate_update_view():
     client = factories.Client.create()
     owner = factories.User.create(password="clear$abc$toto")
     test_client = Client()
