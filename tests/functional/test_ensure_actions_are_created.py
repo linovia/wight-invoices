@@ -61,12 +61,39 @@ def test_action_created_for_estimates():
     assert last_action.user == owner
 
     # Validate the estimate
-    response = test_client.post(reverse('estimate-validate', kwargs={'estimate_id': estimate.id}), data=data, follow=True)
+    response = test_client.get(reverse('estimate-validate', kwargs={'estimate_id': estimate.id}), follow=True)
     assert response.status_code == 200
 
     # Ensure we marked the estimate as validated
     last_action = History.objects.all().order_by('-id')[0]
     assert last_action.action == 'sent'
+    assert last_action.content_type == ContentType.objects.get(app_label="invoice", model="estimate")
+    assert last_action.object_id == '1'
+    assert last_action.user == owner
+
+    # Refuse the estimate
+    response = test_client.get(reverse('estimate-refuse', kwargs={'estimate_id': estimate.id}), follow=True)
+    assert response.status_code == 200
+
+    # Ensure we marked the estimate as validated
+    last_action = History.objects.all().order_by('-id')[0]
+    assert last_action.action == 'refused'
+    assert last_action.content_type == ContentType.objects.get(app_label="invoice", model="estimate")
+    assert last_action.object_id == '1'
+    assert last_action.user == owner
+
+    # Move the estimate back into sent state
+    estimate = models.Estimate.objects.get(id=estimate.id)
+    estimate.status = 'sent'
+    estimate.save()
+
+    # Accept the estimate
+    response = test_client.get(reverse('estimate-accept', kwargs={'estimate_id': estimate.id}), follow=True)
+    assert response.status_code == 200
+
+    # Ensure we marked the estimate as validated
+    last_action = History.objects.all().order_by('-id')[0]
+    assert last_action.action == 'accepted'
     assert last_action.content_type == ContentType.objects.get(app_label="invoice", model="estimate")
     assert last_action.object_id == '1'
     assert last_action.user == owner
