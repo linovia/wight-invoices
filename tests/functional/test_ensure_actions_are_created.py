@@ -160,7 +160,7 @@ def test_action_created_for_invoices():
     assert last_action.object_id == '1'
     assert last_action.user == owner
 
-    # Refuse the invoice
+    # Pay the invoice
     response = test_client.get(reverse('invoice-paid', kwargs={'invoice_id': invoice.id}), follow=True)
     assert response.status_code == 200
 
@@ -176,7 +176,7 @@ def test_action_created_for_invoices():
     invoice.status = 'draft'
     invoice.save()
 
-    # Accept the invoice
+    # Cancel the invoice
     response = test_client.get(reverse('invoice-canceled', kwargs={'invoice_id': invoice.id}), follow=True)
     assert response.status_code == 200
 
