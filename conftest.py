@@ -23,6 +23,7 @@ def pytest_configure():
             'django.contrib.staticfiles',
 
             'wightinvoices.invoice',
+            'wightinvoices.history',
 
             'crispy_forms',
             'guardian',

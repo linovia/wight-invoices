@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import smart_text
 from django.utils.encoding import python_2_unicode_compatible
-
 
 
 @python_2_unicode_compatible
@@ -15,6 +15,7 @@ class History(models.Model):
     # Used for the invoice or estimate
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.TextField(_('object id'), blank=True, null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
     object_repr = models.CharField(_('object repr'), max_length=200)
 
     # What happened

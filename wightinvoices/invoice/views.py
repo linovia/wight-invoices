@@ -11,6 +11,7 @@ from guardian.shortcuts import (assign_perm, remove_perm,
         get_users_with_perms, get_objects_for_user)
 
 from . import models, forms
+from wightinvoices.history.models import History
 
 
 class InvoiceMixin(object):
@@ -134,6 +135,13 @@ class ItemInvoiceProcessMixin(object):
             item.save()
         for item in formset.deleted_objects:
             item.delete()
+
+        History.objects.create(
+            user=self.request.user,
+            content_object=self.object,
+            object_repr=str(self.object),
+            action='new',
+        )
 
         return HttpResponseRedirect(self.get_success_url())
 
