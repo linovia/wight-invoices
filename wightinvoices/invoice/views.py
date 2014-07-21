@@ -293,6 +293,7 @@ class EstimateDetail(EstimateMixin, generic.DetailView):
 class EstimateValidate(EstimateMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'estimate-detail'
     status = 'sent'
+    from_statuses = ['draft']
 
 class EstimateAccept(EstimateMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'estimate-detail'
