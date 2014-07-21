@@ -194,11 +194,14 @@ class StatusChangeMixin(SingleObjectMixin):
     """
     status = None
     from_statuses = None
+    owner_only = False
 
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         # if we have no status or our initial status is allowed
         if not self.from_statuses or obj.status in self.from_statuses:
+            if self.owner_only and obj.owner_id != request.user.id:
+                raise PermissionDenied()
             obj.status = self.status
             obj.save()
             History.objects.create(
@@ -235,12 +238,14 @@ class InvoiceValidate(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
 class InvoicePaid(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'invoice-detail'
     status = 'paid'
+    owner_only = True
     from_statuses = ['unpaid', 'late']
 
 
 class InvoiceCanceled(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'invoice-detail'
     status = 'canceled'
+    owner_only = True
     from_statuses = ['draft']
 
 
