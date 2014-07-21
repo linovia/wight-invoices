@@ -201,6 +201,12 @@ class StatusChangeMixin(SingleObjectMixin):
         if not self.from_statuses or obj.status in self.from_statuses:
             obj.status = self.status
             obj.save()
+            History.objects.create(
+                user=self.request.user,
+                content_object=obj,
+                object_repr=str(obj),
+                action=self.status,
+            )
         return super(StatusChangeMixin, self).get(request, *args, **kwargs)
 
 
