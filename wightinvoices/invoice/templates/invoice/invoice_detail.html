@@ -58,4 +58,16 @@
 
     </div>
 </div>
+
+<div class="well well-sm">
+{% if invoice.is_published %}
+  <a href="{% url 'invoice-paid' invoice.id %}" class="btn btn-success btn-lg" role="button">Paid</a>
+  <a href="{% url 'invoice-cancel' invoice.id %}" class="btn btn-danger btn-lg" role="button">Cancel</a>
+{% endif %}
+{% if invoice.is_draft %}
+  <a href="{% url 'invoice-validate' invoice.id %}" class="btn btn-success btn-lg" role="button">Validate</a>
+  <a href="{% url 'invoice-cancel' invoice.id %}" class="btn btn-danger btn-lg" role="button">Cancel</a>
+{% endif %}
+</div>
+
 {% endblock content %}
