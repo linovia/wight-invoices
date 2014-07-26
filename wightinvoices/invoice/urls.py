@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     url(r'^invoice/(?P<invoice_id>\d+)/update/$', views.InvoiceUpdate.as_view(), name='invoice-update'),
     url(r'^invoice/(?P<invoice_id>\d+)/validate/$', views.InvoiceValidate.as_view(), name='invoice-validate'),
     url(r'^invoice/(?P<invoice_id>\d+)/paid/$', views.InvoicePaid.as_view(), name='invoice-paid'),
-    url(r'^invoice/(?P<invoice_id>\d+)/canceled/$', views.InvoiceCanceled.as_view(), name='invoice-canceled'),
+    url(r'^invoice/(?P<invoice_id>\d+)/cancel/$', views.InvoiceCanceled.as_view(), name='invoice-cancel'),
 
     url(r'^estimate/$', views.EstimateList.as_view(), name='estimate-list'),
     url(r'^estimate/new/$', views.EstimateCreation.as_view(), name='estimate-new'),

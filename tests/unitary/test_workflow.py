@@ -56,7 +56,7 @@ def test_action_created_for_invoices():
     invoice.save()
 
     # Cancel the invoice
-    response = test_client2.get(reverse('invoice-canceled', kwargs={'invoice_id': invoice.id}), follow=True)
+    response = test_client2.get(reverse('invoice-cancel', kwargs={'invoice_id': invoice.id}), follow=True)
     assert response.status_code == 403
-    response = test_client.get(reverse('invoice-canceled', kwargs={'invoice_id': invoice.id}), follow=True)
+    response = test_client.get(reverse('invoice-cancel', kwargs={'invoice_id': invoice.id}), follow=True)
     assert response.status_code == 200
