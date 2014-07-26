@@ -101,6 +101,13 @@ class Invoice(BaseInvoice):
             ('view_invoice', 'View invoice'),
         )
 
+    def is_draft(self):
+        return self.status == 'draft'
+
+    def is_published(self):
+        return self.status in ('unpaid', 'late')
+
+
 
 class InvoiceItem(BaseItem):
     invoice = models.ForeignKey(Invoice, related_name='items')
