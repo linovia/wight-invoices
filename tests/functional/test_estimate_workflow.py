@@ -1,11 +1,14 @@
 import pytest
+import functools
 from lxml import etree
-
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
 from wightinvoices.invoice import factories, models
 
+
+def get_button(tree, label):
+    return tree.xpath("//a[text()='%s']" % label)
 
 
 @pytest.mark.django_db
@@ -30,6 +33,11 @@ def test_estimate_update_view():
     estimate_count = models.Estimate.objects.count()
     response = test_client.post(reverse('estimate-new'), data=data, follow=True)
 
+    find_update_button = functools.partial(get_button, label="Update estimate")
+    find_validate_button = functools.partial(get_button, label="Validate")
+    find_accept_button = functools.partial(get_button, label="Accept")
+    find_refuse_button = functools.partial(get_button, label="Refuse")
+
     # Check the form is valid
     # response.redirect_chain
     assert response.status_code == 200
@@ -52,11 +60,11 @@ def test_estimate_update_view():
     # none to accept / refuse
     data = response.content.decode('utf8')
 
-    html = etree.HTML(data)
-    update = html.xpath("//a[text()='Update estimate']")
-    validate = html.xpath("//a[text()='Validate']")
-    accept = html.xpath("//a[text()='Accept']")
-    refuse = html.xpath("//a[text()='Refuse']")
+    html_tree = etree.HTML(data)
+    update = find_update_button(html_tree)
+    validate = find_validate_button(html_tree)
+    accept = find_accept_button(html_tree)
+    refuse = find_refuse_button(html_tree)
 
     assert update
     assert validate
@@ -78,11 +86,11 @@ def test_estimate_update_view():
     # buttons for modification / validate
     data = response.content.decode('utf8')
 
-    html = etree.HTML(data)
-    update = html.xpath("//a[text()='Update estimate']")
-    validate = html.xpath("//a[text()='Validate']")
-    accept = html.xpath("//a[text()='Accept']")
-    refuse = html.xpath("//a[text()='Refuse']")
+    html_tree = etree.HTML(data)
+    update = find_update_button(html_tree)
+    validate = find_validate_button(html_tree)
+    accept = find_accept_button(html_tree)
+    refuse = find_refuse_button(html_tree)
 
     assert update
     assert not validate
