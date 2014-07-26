@@ -246,7 +246,7 @@ class InvoiceCanceled(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'invoice-detail'
     status = 'canceled'
     owner_only = True
-    from_statuses = ['draft']
+    from_statuses = ['draft', 'unpaid', 'late']
 
 
 #
