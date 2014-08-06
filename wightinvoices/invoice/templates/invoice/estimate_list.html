@@ -1,13 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href="{% url 'estimate-new' %}" class="btn btn-primary btn-lg active" role="button">New estimate</a>
-
 <div class="row">
-    <ul>
-    {% for estimate in estimate_list %}
-        <li><a href="{{ estimate.get_absolute_url }}">{{ estimate.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Estimates</h3>
+            </div>
+            <div class="panel-body invoice-list">
+                <table class="table table-striped">
+                    <tbody>
+                        {% for estimate in estimate_list %}
+                        <tr>
+                            <td>{{ estimate.status }}</td>
+                            <td>{{ estimate.client }}</td>
+                            <td><a href="{{ estimate.get_absolute_url }}">{{ estimate.name }}</a></td>
+                            <td>#{{ estimate.id }}</td>
+                            <td>{{ estimate.net_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="{% url 'estimate-new' %}" class="btn btn-primary btn-lg active btn-block" role="button">New estimate</a>
+            </div>
+        </div>
+        &nbsp;
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Filters</h3>
+            </div>
+            <div class="panel-body">
+                <form action="" method="get">
+                    {{ filter.form.as_p }}
+                    <input type="submit" />
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock content %}
