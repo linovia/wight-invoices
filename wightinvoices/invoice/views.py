@@ -9,8 +9,9 @@ from django.views.generic.detail import SingleObjectMixin
 
 from guardian.shortcuts import (assign_perm, remove_perm,
         get_users_with_perms, get_objects_for_user)
+from django_filters.views import FilterView
 
-from . import models, forms
+from . import models, forms, filters
 from wightinvoices.history.models import History
 
 
@@ -31,6 +32,11 @@ class InvoiceMixin(object):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(InvoiceMixin, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(InvoiceMixin, self).get_context_data(**kwargs)
+        kwargs['activemenu'] = 'invoice'
+        return kwargs
 
 
 class ItemInvoiceProcessMixin(object):
@@ -194,11 +200,14 @@ class StatusChangeMixin(SingleObjectMixin):
     """
     status = None
     from_statuses = None
+    owner_only = False
 
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         # if we have no status or our initial status is allowed
         if not self.from_statuses or obj.status in self.from_statuses:
+            if self.owner_only and obj.owner_id != request.user.id:
+                raise PermissionDenied()
             obj.status = self.status
             obj.save()
             History.objects.create(
@@ -211,7 +220,9 @@ class StatusChangeMixin(SingleObjectMixin):
 
 
 class InvoiceList(InvoiceMixin, generic.ListView):
-    pass
+    def get_queryset(self):
+        queryset = super(InvoiceList, self).get_queryset()
+        return queryset.opened()
 
 
 class InvoiceCreation(InvoiceMixin, CreateMixin, ItemInvoiceProcessMixin, generic.CreateView):
@@ -224,6 +235,26 @@ class InvoiceUpdate(InvoiceMixin, UpdateMixin, ItemInvoiceProcessMixin, generic.
 
 class InvoiceDetail(InvoiceMixin, generic.DetailView):
     pass
+
+
+class InvoiceValidate(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'invoice-detail'
+    status = 'unpaid'
+    from_statuses = ['draft']
+
+
+class InvoicePaid(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'invoice-detail'
+    status = 'paid'
+    owner_only = True
+    from_statuses = ['unpaid', 'late']
+
+
+class InvoiceCanceled(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
+    pattern_name = 'invoice-detail'
+    status = 'canceled'
+    owner_only = True
+    from_statuses = ['draft', 'unpaid', 'late']
 
 
 #
@@ -248,6 +279,11 @@ class EstimateMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(EstimateMixin, self).dispatch(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        kwargs = super(EstimateMixin, self).get_context_data(**kwargs)
+        kwargs['activemenu'] = 'estimate'
+        return kwargs
+
 
 class ItemEstimateProcessMixin(ItemInvoiceProcessMixin):
     item_model = models.EstimateItem
@@ -256,8 +292,8 @@ class ItemEstimateProcessMixin(ItemInvoiceProcessMixin):
     view_permission = 'view_estimate'
 
 
-class EstimateList(EstimateMixin, generic.ListView):
-    pass
+class EstimateList(EstimateMixin, FilterView):  # generic.ListView):
+    filterset_class = filters.Estimate
 
 
 class EstimateCreation(EstimateMixin, CreateMixin, ItemEstimateProcessMixin, generic.CreateView):
@@ -275,6 +311,7 @@ class EstimateDetail(EstimateMixin, generic.DetailView):
 class EstimateValidate(EstimateMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'estimate-detail'
     status = 'sent'
+    from_statuses = ['draft']
 
 class EstimateAccept(EstimateMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'estimate-detail'

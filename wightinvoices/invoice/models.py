@@ -8,18 +8,21 @@ TWOPLACES = Decimal(10) ** -2
 
 
 INVOICE_STATUS = (
-    ('draft', _('Draft')),
-    ('unpaid', _('Unpaid')),
-    ('canceled', _('Canceled')),
-    ('paid', _('Paid')),
+    # value, name, opened
+    ('draft', _('Draft'), True),
+    ('unpaid', _('Unpaid'), True),
+    ('late', _('Late'), True),
+    ('paid', _('Paid'), False),
+    ('canceled', _('Canceled'), False),
 )
 
 
 ESTIMATE_STATUS = (
-    ('draft', _('Draft')),
-    ('sent', _('Sent')),
-    ('accepted', _('Accepted')),
-    ('refused', _('Refused')),
+    # value, name, opened
+    ('draft', _('Draft'), True),
+    ('sent', _('Sent'), True),
+    ('accepted', _('Accepted'), False),
+    ('refused', _('Refused'), False),
 )
 
 
@@ -92,26 +95,65 @@ class BaseItem(models.Model):
         return (self.quantity * self.gross_amount).quantize(TWOPLACES)
 
 
+class InvoiceQuerySet(models.QuerySet):
+    def opened(self):
+        return self.filter(status__in=[e[0] for e in INVOICE_STATUS if e[2]])
+
+    def closed(self):
+        return self.filter(status__in=[e[0] for e in INVOICE_STATUS if not e[2]])
+
+
 class Invoice(BaseInvoice):
-    status = models.CharField(max_length=64, choices=INVOICE_STATUS, default='draft')
+    status = models.CharField(max_length=64, default=INVOICE_STATUS[0][0],
+        choices=[e[0:2] for e in INVOICE_STATUS])
+
+    objects = InvoiceQuerySet.as_manager()
 
     class Meta:
         permissions = (
             ('view_invoice', 'View invoice'),
         )
 
+    def is_draft(self):
+        return self.status == 'draft'
+
+    def is_published(self):
+        return self.status in ('unpaid', 'late')
+
+
 
 class InvoiceItem(BaseItem):
     invoice = models.ForeignKey(Invoice, related_name='items')
 
 
+class InvoiceComment(models.Model):
+    invoice = models.ForeignKey(Invoice)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    comment = models.TextField()
+
+
+class EstimateQuerySet(models.QuerySet):
+    def opened(self):
+        return self.filter(status__in=[e[0] for e in ESTIMATE_STATUS if e[2]])
+
+    def closed(self):
+        return self.filter(status__in=[e[0] for e in ESTIMATE_STATUS if not e[2]])
+
+
 class Estimate(BaseInvoice):
-    status = models.CharField(max_length=64, choices=ESTIMATE_STATUS, default='draft')
+    status = models.CharField(max_length=64, default='draft',
+        choices=[e[0:2] for e in ESTIMATE_STATUS])
+
+    objects = EstimateQuerySet.as_manager()
 
     class Meta:
         permissions = (
             ('view_estimate', 'View estimate'),
         )
+
+    def get_absolute_url(self):
+        return reverse('estimate-detail', kwargs={'estimate_id': self.id})
 
     def is_draft(self):
         return self.status == 'draft'
@@ -122,3 +164,10 @@ class Estimate(BaseInvoice):
 
 class EstimateItem(BaseItem):
     estimate = models.ForeignKey(Estimate, related_name='items')
+
+
+class EstimateComment(models.Model):
+    estimate = models.ForeignKey(Estimate)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    comment = models.TextField()
