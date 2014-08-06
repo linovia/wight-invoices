@@ -219,7 +219,9 @@ class StatusChangeMixin(SingleObjectMixin):
 
 
 class InvoiceList(InvoiceMixin, generic.ListView):
-    pass
+    def get_queryset(self):
+        queryset = super(InvoiceList, self).get_queryset()
+        return queryset.opened()
 
 
 class InvoiceCreation(InvoiceMixin, CreateMixin, ItemInvoiceProcessMixin, generic.CreateView):
