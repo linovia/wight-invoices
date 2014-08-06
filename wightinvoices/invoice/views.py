@@ -9,8 +9,9 @@ from django.views.generic.detail import SingleObjectMixin
 
 from guardian.shortcuts import (assign_perm, remove_perm,
         get_users_with_perms, get_objects_for_user)
+from django_filters.views import FilterView
 
-from . import models, forms
+from . import models, forms, filters
 from wightinvoices.history.models import History
 
 
@@ -291,8 +292,8 @@ class ItemEstimateProcessMixin(ItemInvoiceProcessMixin):
     view_permission = 'view_estimate'
 
 
-class EstimateList(EstimateMixin, generic.ListView):
-    pass
+class EstimateList(EstimateMixin, FilterView):  # generic.ListView):
+    filterset_class = filters.Estimate
 
 
 class EstimateCreation(EstimateMixin, CreateMixin, ItemEstimateProcessMixin, generic.CreateView):
