@@ -126,6 +126,13 @@ class InvoiceItem(BaseItem):
     invoice = models.ForeignKey(Invoice, related_name='items')
 
 
+class InvoiceComment(models.Model):
+    invoice = models.ForeignKey(Invoice)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    comment = models.TextField()
+
+
 class EstimateQuerySet(models.QuerySet):
     def opened(self):
         return self.filter(status__in=[e[0] for e in ESTIMATE_STATUS if e[2]])
@@ -157,3 +164,10 @@ class Estimate(BaseInvoice):
 
 class EstimateItem(BaseItem):
     estimate = models.ForeignKey(Estimate, related_name='items')
+
+
+class EstimateComment(models.Model):
+    estimate = models.ForeignKey(Estimate)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    comment = models.TextField()
