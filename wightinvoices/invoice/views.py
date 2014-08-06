@@ -32,6 +32,11 @@ class InvoiceMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(InvoiceMixin, self).dispatch(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        kwargs = super(InvoiceMixin, self).get_context_data(**kwargs)
+        kwargs['activemenu'] = 'invoice'
+        return kwargs
+
 
 class ItemInvoiceProcessMixin(object):
     """
@@ -270,6 +275,11 @@ class EstimateMixin(object):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(EstimateMixin, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(EstimateMixin, self).get_context_data(**kwargs)
+        kwargs['activemenu'] = 'estimate'
+        return kwargs
 
 
 class ItemEstimateProcessMixin(ItemInvoiceProcessMixin):
