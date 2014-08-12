@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'guardian',
     'allauth',
     'allauth.account',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
