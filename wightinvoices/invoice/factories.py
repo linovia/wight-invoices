@@ -9,6 +9,7 @@ class User(factory.DjangoModelFactory):
     username = factory.Sequence(lambda n: 'user%d' % n)
     first_name = 'John'
     last_name = 'Doe'
+    email = 'john@doe.org'
     # admin = False
 
 
