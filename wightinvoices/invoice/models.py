@@ -36,7 +36,7 @@ class Client(models.Model):
 
 class BaseInvoice(models.Model):
     name = models.CharField(max_length=256)
-    comments = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_%(class)ss")
     client = models.ForeignKey(Client, related_name='%(class)s')
 
