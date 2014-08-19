@@ -22,7 +22,7 @@ def test_get_invoice():
     assert response.data == {
         'id': invoice.id,
         'client': 'client1',
-        'comments': None,
+        'notes': None,
         'items': [{
             'id': invoice_item.id,
             'description': invoice_item.description,
