@@ -44,6 +44,12 @@ class InvoiceItemHelper(FormHelper):
         self.template = 'invoice/invoice_form_formset.html'
 
 
+class InvoiceCommentForm(forms.ModelForm):
+    class Meta:
+        model = models.InvoiceComment
+        fields = ('comment',)
+
+
 class Estimate(Invoice):
     class Meta(Invoice.Meta):
         model = models.Estimate

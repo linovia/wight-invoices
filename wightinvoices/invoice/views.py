@@ -234,7 +234,24 @@ class InvoiceUpdate(InvoiceMixin, UpdateMixin, ItemInvoiceProcessMixin, generic.
 
 
 class InvoiceDetail(InvoiceMixin, generic.DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        kwargs = super(InvoiceDetail, self).get_context_data(**kwargs)
+        kwargs['comment_form'] = self.form
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        self.form = forms.InvoiceCommentForm()
+        return super(InvoiceDetail, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        # TODO: check permissions access
+        self.form = forms.InvoiceCommentForm(
+            data=self.request.POST,
+            files=self.request.FILES)
+        if self.form.is_valid():
+            return HttpResponseRedirect(request.path)
+        else:
+            return self.get(request, *args, **kwargs)
 
 
 class InvoiceValidate(InvoiceMixin, StatusChangeMixin, generic.RedirectView):
