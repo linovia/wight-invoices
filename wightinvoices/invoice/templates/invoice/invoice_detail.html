@@ -73,17 +73,17 @@
 </div>
 {% endif %}
 
-<div class="media">
-    {% for comment in invoice.comments.all %}
+{% for comment in invoice.comments.all %}
+    <div class="media">
         <a class="pull-left" href="#">
-          <img class="media-object img-circle" src="http://placehold.it/64x64" alt="">
+          <img class="media-object img-circle" src="http://placehold.it/32x32" alt="">
         </a>
         <div class="media-body">
           <h4 class="media-heading">{{ comment.user }}</h4>
           {{ comment.comment }}
         </div>
-    {% endfor %}
-</div>
+    </div>
+{% endfor %}
 
 <div class="row">
     <div class="col-md-12">
