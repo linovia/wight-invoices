@@ -249,6 +249,12 @@ class InvoiceDetail(InvoiceMixin, generic.DetailView):
             data=self.request.POST,
             files=self.request.FILES)
         if self.form.is_valid():
+            data = self.form.cleaned_data
+            models.InvoiceComment.objects.create(
+                invoice_id=self.kwargs[self.pk_url_kwarg],
+                comment=data['comment'],
+                user=request.user,
+            )
             return HttpResponseRedirect(request.path)
         else:
             return self.get(request, *args, **kwargs)
