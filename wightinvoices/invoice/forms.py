@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
+from crispy_forms.layout import Layout, Field, Submit
 
 from . import models
 
@@ -42,6 +42,19 @@ class InvoiceItemHelper(FormHelper):
         self.form_tag = False
         self.form_class = 'form-inline'
         self.template = 'invoice/invoice_form_formset.html'
+
+
+class InvoiceCommentForm(forms.ModelForm):
+    class Meta:
+        model = models.InvoiceComment
+        fields = ('comment',)
+
+    def __init__(self, *args, **kwargs):
+        super(InvoiceCommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            'comment',
+            Submit('submit', 'Submit', css_class='button white'))
 
 
 class Estimate(Invoice):

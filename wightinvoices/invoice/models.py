@@ -127,7 +127,7 @@ class InvoiceItem(BaseItem):
 
 
 class InvoiceComment(models.Model):
-    invoice = models.ForeignKey(Invoice)
+    invoice = models.ForeignKey(Invoice, related_name='comments')
     date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     comment = models.TextField()

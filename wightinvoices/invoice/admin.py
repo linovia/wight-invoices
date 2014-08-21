@@ -11,9 +11,13 @@ class InvoiceItemInline(admin.TabularInline):
     model = models.InvoiceItem
 
 
+class InvoiceCommentInline(admin.TabularInline):
+    model = models.InvoiceComment
+
 class InvoiceAdmin(GuardedModelAdmin):
     inlines = [
-        InvoiceItemInline
+        InvoiceItemInline,
+        InvoiceCommentInline
     ]
 
 
