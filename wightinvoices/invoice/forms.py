@@ -44,13 +44,13 @@ class InvoiceItemHelper(FormHelper):
         self.template = 'invoice/invoice_form_formset.html'
 
 
-class InvoiceCommentForm(forms.ModelForm):
+class InvoiceComment(forms.ModelForm):
     class Meta:
         model = models.InvoiceComment
         fields = ('comment',)
 
     def __init__(self, *args, **kwargs):
-        super(InvoiceCommentForm, self).__init__(*args, **kwargs)
+        super(InvoiceComment, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             'comment',
