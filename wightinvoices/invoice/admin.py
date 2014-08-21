@@ -26,9 +26,14 @@ class EstimateItemInline(admin.TabularInline):
     model = models.EstimateItem
 
 
+class EstimateCommentInline(admin.TabularInline):
+    model = models.EstimateComment
+
+
 class EstimateAdmin(GuardedModelAdmin):
     inlines = [
-        EstimateItemInline
+        EstimateItemInline,
+        EstimateCommentInline,
     ]
 
 

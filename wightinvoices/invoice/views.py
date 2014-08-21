@@ -328,7 +328,30 @@ class EstimateUpdate(EstimateMixin, UpdateMixin, ItemEstimateProcessMixin, gener
 
 
 class EstimateDetail(EstimateMixin, generic.DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        kwargs = super(EstimateDetail, self).get_context_data(**kwargs)
+        kwargs['comment_form'] = self.form
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        self.form = forms.EstimateComment()
+        return super(EstimateDetail, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        # TODO: check permissions access
+        self.form = forms.EstimateComment(
+            data=self.request.POST,
+            files=self.request.FILES)
+        if self.form.is_valid():
+            data = self.form.cleaned_data
+            models.EstimateComment.objects.create(
+                estimate_id=self.kwargs[self.pk_url_kwarg],
+                comment=data['comment'],
+                user=request.user,
+            )
+            return HttpResponseRedirect(request.path)
+        else:
+            return self.get(request, *args, **kwargs)
 
 
 class EstimateValidate(EstimateMixin, StatusChangeMixin, generic.RedirectView):

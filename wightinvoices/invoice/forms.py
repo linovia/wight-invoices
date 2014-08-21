@@ -65,3 +65,16 @@ class Estimate(Invoice):
 class EstimateItem(InvoiceItem):
     class Meta(InvoiceItem.Meta):
         model = models.EstimateItem
+
+
+class EstimateComment(forms.ModelForm):
+    class Meta:
+        model = models.EstimateComment
+        fields = ('comment',)
+
+    def __init__(self, *args, **kwargs):
+        super(EstimateComment, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            'comment',
+            Submit('submit', 'Submit', css_class='button white'))
