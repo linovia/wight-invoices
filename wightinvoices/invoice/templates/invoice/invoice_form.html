@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
+{% block main-title %}{{ invoice.name }}{% endblock %}
 
 {% block extra-css %}
     <link href="{% static 'css/chosen.min.css' %}" rel="stylesheet">
