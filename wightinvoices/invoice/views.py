@@ -244,7 +244,10 @@ class InvoiceDetail(InvoiceMixin, generic.DetailView):
         return super(InvoiceDetail, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        # TODO: check permissions access
+        # Check permissions access by calling get_object
+        self.get_object()
+
+        # Process the comment form
         self.form = forms.InvoiceComment(
             data=self.request.POST,
             files=self.request.FILES)
