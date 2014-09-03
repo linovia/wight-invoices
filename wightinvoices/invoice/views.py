@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
@@ -369,3 +370,29 @@ class EstimateRefuse(EstimateMixin, StatusChangeMixin, generic.RedirectView):
     pattern_name = 'estimate-detail'
     status = 'refused'
     from_statuses = ['sent']
+
+
+class EstimateConvert(EstimateMixin, generic.RedirectView):
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+
+        # Duplicate the estimate into an invoice
+        with transaction.atomic():
+            invoice_data = {}
+            for f in ('notes', 'name', 'owner', 'client'):
+                invoice_data[f] = getattr(obj, f, None)
+            invoice_data['status'] = 'draft'
+            invoice = models.Invoice.objects.create(**invoice_data)
+            for item in obj.items.all():
+                item_data = {'invoice_id': invoice.id}
+                for k in ('invoice', 'description', 'quantity', 'vat', 'amount'):
+                    item_data[k] = getattr(invoice, k)
+                models.InvoiceItem.objects.create(**item_data)
+
+            History.objects.create(
+                user=self.request.user,
+                content_object=obj,
+                object_repr=str(obj),
+                action='created',
+            )
+        return super(EstimateConvert, self).get(request, *args, **kwargs)

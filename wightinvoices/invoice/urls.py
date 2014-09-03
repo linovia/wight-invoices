@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     url(r'^estimate/(?P<estimate_id>\d+)/accept/$', views.EstimateAccept.as_view(), name='estimate-accept'),
     url(r'^estimate/(?P<estimate_id>\d+)/refuse/$', views.EstimateRefuse.as_view(), name='estimate-refuse'),
     url(r'^estimate/(?P<estimate_id>\d+)/validate/$', views.EstimateValidate.as_view(), name='estimate-validate'),
+    url(r'^estimate/(?P<estimate_id>\d+)/convert/$', views.EstimateConvert.as_view(), name='estimate-convert'),
 )
