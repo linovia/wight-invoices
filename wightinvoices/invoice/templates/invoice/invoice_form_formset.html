@@ -50,9 +50,26 @@
             {% with formset.prefix as prefix %}
             {% with formset.empty_form as form %}
             <tr class="invoiceitem empty-form"  id="{{ prefix }}-empty" >
-                {% for field in form %}
+                {% with form.description as field %}
                     {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
-                {% endfor %}
+                {% endwith %}
+                {% with form.quantity as field %}
+                    {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
+                {% endwith %}
+                {% with form.vat as field %}
+                    {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
+                {% endwith %}
+                {% with form.amount as field %}
+                    {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
+                {% endwith %}
+                {% with form.id as field %}
+                    {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
+                {% endwith %}
+                <td id="div_id_items-{{prefix}}-DELETE" class="control-group">
+                  <div class="controls">
+                    <input class="hidden checkboxinput checkbox" id="id_items-{{prefix}}-DELETE" name="items-{{prefix}}-DELETE" type="checkbox">
+                  </div>
+                </td>
                 <td>
                     <a class="glyphicon glyphicon-remove remove_child"></a>
                 </td>
