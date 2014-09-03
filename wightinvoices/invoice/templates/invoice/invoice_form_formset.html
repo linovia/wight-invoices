@@ -37,12 +37,12 @@
                     {% include "bootstrap/errors.html" %}
                 {% endif %}
 
-                <tr class="invoiceitem">
+                <tr class="invoiceitem" id="{{ formset.prefix }}-{{ forloop.counter0 }}">
                     {% for field in form %}
-                        {% include 'bootstrap/field.html' with tag="th" form_show_labels=False %}
+                        {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
                     {% endfor %}
                     <td>
-                        <a class="glyphicon glyphicon-remove remove_child"></a>
+                        <a class="glyphicon glyphicon-remove remove_child" relatedid="{{ form.id.value }}"></a>
                     </td>
                 </tr>
             {% endfor %}
@@ -51,7 +51,7 @@
             {% with formset.empty_form as form %}
             <tr class="invoiceitem empty-form"  id="{{ prefix }}-empty" >
                 {% for field in form %}
-                    {% include 'bootstrap/field.html' with tag="th" form_show_labels=False %}
+                    {% include 'bootstrap/field.html' with tag="td" form_show_labels=False %}
                 {% endfor %}
                 <td>
                     <a class="glyphicon glyphicon-remove remove_child"></a>
@@ -72,4 +72,5 @@
         </div>
     {% endif %}
 {% if formset_tag %}</form>{% endif %}
+
 {% endspecialspaceless %}

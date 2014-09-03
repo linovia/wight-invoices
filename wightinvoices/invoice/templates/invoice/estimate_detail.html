@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="row">
@@ -60,6 +61,7 @@
 </div>
 
 
+{% if estimate.is_published or estimate.is_draft %}
 <div class="well well-sm">
 {% if estimate.is_published %}
   <a href="{% url 'estimate-accept' estimate.id %}" class="btn btn-success btn-lg" role="button">Accept</a>
@@ -68,6 +70,25 @@
 {% if estimate.is_draft %}
   <a href="{% url 'estimate-validate' estimate.id %}" class="btn btn-success btn-lg" role="button">Validate</a>
 {% endif %}
+</div>
+{% endif %}
+
+{% for comment in estimate.comments.all %}
+    <div class="media">
+        <a class="pull-left" href="#">
+          <img class="media-object img-circle" src="http://placehold.it/32x32" alt="">
+        </a>
+        <div class="media-body">
+          <h4 class="media-heading">{{ comment.user }}</h4>
+          {{ comment.comment }}
+        </div>
+    </div>
+{% endfor %}
+
+<div class="row">
+    <div class="col-md-12">
+      {% crispy comment_form %}
+    </div>
 </div>
 
 {% endblock content %}

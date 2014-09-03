@@ -42,15 +42,23 @@ class InvoiceItemHelper(FormHelper):
         self.form_tag = False
         self.form_class = 'form-inline'
         self.template = 'invoice/invoice_form_formset.html'
+        self.layout = Layout(
+            'quantity',
+            'vat',
+            'amount',
+            'id',
+            Field('DELETE', css_class="hidden"),
+            'description',
+        )
 
 
-class InvoiceCommentForm(forms.ModelForm):
+class InvoiceComment(forms.ModelForm):
     class Meta:
         model = models.InvoiceComment
         fields = ('comment',)
 
     def __init__(self, *args, **kwargs):
-        super(InvoiceCommentForm, self).__init__(*args, **kwargs)
+        super(InvoiceComment, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             'comment',
@@ -65,3 +73,16 @@ class Estimate(Invoice):
 class EstimateItem(InvoiceItem):
     class Meta(InvoiceItem.Meta):
         model = models.EstimateItem
+
+
+class EstimateComment(forms.ModelForm):
+    class Meta:
+        model = models.EstimateComment
+        fields = ('comment',)
+
+    def __init__(self, *args, **kwargs):
+        super(EstimateComment, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            'comment',
+            Submit('submit', 'Submit', css_class='button white'))

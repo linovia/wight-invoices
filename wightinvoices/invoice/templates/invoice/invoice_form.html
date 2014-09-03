@@ -35,6 +35,22 @@ var django = {
   })(django.jQuery);
 </script>
 {% endwith %}
+
+<script type="text/javascript">
+  (function(){
+    $('form a.remove_child').on('click', function() {
+      $(this).trigger('before');
+      var line = $(this).parent().parent().first();
+      console.log(line);
+      var field = line.find('#id_items-0-DELETE').first();
+      console.log(field);
+      if (field) { field.prop('checked', true); }
+      line.hide();
+      $(this).trigger('complete');
+      return false;
+    });
+  })(django.jQuery);
+</script>
 {% endblock extra-js %}
 
 
