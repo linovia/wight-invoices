@@ -42,6 +42,14 @@ class InvoiceItemHelper(FormHelper):
         self.form_tag = False
         self.form_class = 'form-inline'
         self.template = 'invoice/invoice_form_formset.html'
+        self.layout = Layout(
+            'quantity',
+            'vat',
+            'amount',
+            'id',
+            Field('DELETE', css_class="hidden"),
+            'description',
+        )
 
 
 class InvoiceComment(forms.ModelForm):
