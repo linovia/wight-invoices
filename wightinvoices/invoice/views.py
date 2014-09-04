@@ -244,7 +244,10 @@ class InvoiceDetail(InvoiceMixin, generic.DetailView):
         return super(InvoiceDetail, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        # TODO: check permissions access
+        # Check permissions access by calling get_object
+        self.get_object()
+
+        # Process the comment form
         self.form = forms.InvoiceComment(
             data=self.request.POST,
             files=self.request.FILES)
@@ -338,7 +341,10 @@ class EstimateDetail(EstimateMixin, generic.DetailView):
         return super(EstimateDetail, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        # TODO: check permissions access
+        # Check permissions access by calling get_object
+        self.get_object()
+
+        # Process the comment form
         self.form = forms.EstimateComment(
             data=self.request.POST,
             files=self.request.FILES)
@@ -350,8 +356,8 @@ class EstimateDetail(EstimateMixin, generic.DetailView):
                 user=request.user,
             )
             return HttpResponseRedirect(request.path)
-        else:
-            return self.get(request, *args, **kwargs)
+
+        return self.get(request, *args, **kwargs)
 
 
 class EstimateValidate(EstimateMixin, StatusChangeMixin, generic.RedirectView):
