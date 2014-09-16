@@ -11,7 +11,7 @@ class ClientMixin(object):
     A mixin that describes Client model.
     """
     model = models.Client
-    pk_url_kwarg = 'invoice_id'
+    pk_url_kwarg = 'client_id'
     form_class = forms.Client
 
     def get_success_url(self):
