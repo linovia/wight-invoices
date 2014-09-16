@@ -18,7 +18,7 @@ class ClientMixin(object):
         return reverse('client-detail', args=[self.object.id])
 
     def get_queryset(self):
-        return super(ClientMixin, self).get_queryset
+        return super(ClientMixin, self).get_queryset()
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -28,3 +28,19 @@ class ClientMixin(object):
         kwargs = super(ClientMixin, self).get_context_data(**kwargs)
         kwargs['activemenu'] = 'client'
         return kwargs
+
+
+class ClientList(ClientMixin, generic.ListView):
+    pass
+
+
+class ClientCreation(ClientMixin, generic.CreateView):
+    pass
+
+
+class ClientUpdate(ClientMixin, generic.UpdateView):
+    pass
+
+
+class ClientDetail(ClientMixin, generic.DetailView):
+    pass
