@@ -153,3 +153,17 @@ LOGGING = {
         },
     }
 }
+
+
+#
+# WIGHTINVOICE
+#
+
+INVOICE_URL_PREFIX = ''
+
+# Web Service
+INVOICE_WEB_HOST = 'localhost'
+INVOICE_WEB_PORT = 9000
+INVOICE_WEB_OPTIONS = {
+    'workers': 3,
+}
