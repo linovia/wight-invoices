@@ -24,6 +24,7 @@ def pytest_configure():
 
             'wightinvoices.invoice',
             'wightinvoices.history',
+            'wightinvoices.clients',
 
             'crispy_forms',
             'guardian',
