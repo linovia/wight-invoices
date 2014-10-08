@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'allauth.account',
     'rest_framework',
     'gunicorn',
+    'logan',
 )
 
 MIDDLEWARE_CLASSES = (
