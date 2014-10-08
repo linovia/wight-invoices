@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 
     # Project applications
+    'wightinvoices',
     'wightinvoices.invoice',
     'wightinvoices.history',
     'wightinvoices.clients',
@@ -50,6 +51,7 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'rest_framework',
+    'gunicorn',
 )
 
 MIDDLEWARE_CLASSES = (
