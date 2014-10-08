@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 
 
 class Client(models.Model):
@@ -12,3 +13,6 @@ class Client(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('client-detail', kwargs={'client_id': self.id})
