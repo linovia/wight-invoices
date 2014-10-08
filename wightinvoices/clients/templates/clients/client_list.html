@@ -14,7 +14,7 @@
                     <tbody>
                         {% for client in client_list %}
                         <tr>
-                            <td>{{ client.name }}</td>
+                            <td><a href="{{ client.get_absolute_url }}">{{ client.name }}</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
