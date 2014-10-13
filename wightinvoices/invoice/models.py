@@ -3,6 +3,8 @@ from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from wightinvoices.clients.models import Client
+
 
 TWOPLACES = Decimal(10) ** -2
 
@@ -26,19 +28,12 @@ ESTIMATE_STATUS = (
 )
 
 
-class Client(models.Model):
-    name = models.CharField(max_length=64)
-    address = models.TextField()
-
-    def __str__(self):
-        return self.name
-
-
 class BaseInvoice(models.Model):
     name = models.CharField(max_length=256)
     notes = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_%(class)ss")
-    client = models.ForeignKey(Client, related_name='%(class)s')
+    client = models.ForeignKey(Client, related_name='%(class)ss')
+    creation_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True

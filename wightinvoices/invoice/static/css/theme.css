@@ -7,6 +7,6 @@ body {
   margin-bottom: 20px;
 }
 
-.invoice-list {
+.invoice-list, .client-list {
     padding: 0;
 }
