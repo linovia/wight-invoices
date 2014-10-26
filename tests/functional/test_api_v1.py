@@ -19,6 +19,7 @@ def test_invoice_detail():
     url = reverse('api-invoice-detail', kwargs={'pk': invoice.id})
     response = api_client.get(url)
 
+    assert response.status_code == 200
     assert response.data == {
         'id': invoice.id,
         'client': 'client1',
