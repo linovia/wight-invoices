@@ -1,8 +1,13 @@
+
+from operator import attrgetter
+import itertools
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.core.urlresolvers import reverse
 
+from wightinvoices.invoice.models import Invoice, Estimate
 from . import models, forms
 
 
@@ -43,4 +48,15 @@ class ClientUpdate(ClientMixin, generic.UpdateView):
 
 
 class ClientDetail(ClientMixin, generic.DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        kwargs = super(ClientMixin, self).get_context_data(**kwargs)
+        def add_type(type_value):
+            def _add_type(item):
+                item.type = type_value
+                return item
+            return _add_type
+        invoices = map(add_type('Invoice'), Invoice.objects.filter(client=self.object))
+        estimates = map(add_type('Estimate'), Estimate.objects.filter(client=self.object))
+        items = sorted(itertools.chain(invoices, estimates), key=attrgetter('creation_date'))
+        kwargs['items'] = items
+        return kwargs

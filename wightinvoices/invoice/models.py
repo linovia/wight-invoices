@@ -33,6 +33,7 @@ class BaseInvoice(models.Model):
     notes = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owned_%(class)ss")
     client = models.ForeignKey(Client, related_name='%(class)ss')
+    creation_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
