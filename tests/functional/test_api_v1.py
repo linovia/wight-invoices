@@ -6,18 +6,18 @@ from wightinvoices.invoice import factories
 
 
 pytestmark = pytest.mark.django_db
+api_client = APIClient()
 
 
 def test_get_invoice():
-    test_client = APIClient()
     owner = factories.User.create(password="clear$abc$toto")
-    assert test_client.login(username=owner.username, password="toto")
+    assert api_client.login(username=owner.username, password="toto")
 
     invoice = factories.Invoice.create()
     invoice_item = factories.InvoiceItem.create(invoice=invoice)
 
     url = reverse('api-invoice-detail', kwargs={'pk': invoice.id})
-    response = test_client.get(url)
+    response = api_client.get(url)
 
     assert response.data == {
         'id': invoice.id,
