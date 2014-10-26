@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 api_client = APIClient()
 
 
-def test_get_invoice():
+def test_invoice_detail():
     owner = factories.User.create(password="clear$abc$toto")
     assert api_client.login(username=owner.username, password="toto")
 
