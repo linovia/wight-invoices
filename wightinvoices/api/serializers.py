@@ -37,11 +37,9 @@ class Invoice(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        print(validated_data)
         items_data = validated_data.pop('items', [])
         validated_data['owner'] = self.context['request'].user
         invoice = models.Invoice.objects.create(**validated_data)
         for item_data in items_data:
-            print('Creating: %s' % item_data)
             models.InvoiceItem.objects.create(invoice=invoice, **item_data)
         return invoice
