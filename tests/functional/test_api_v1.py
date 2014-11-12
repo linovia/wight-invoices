@@ -18,7 +18,7 @@ def test_invoice_detail():
     invoice_item = factories.InvoiceItem.create(invoice=invoice)
 
     url = reverse('api-invoice-detail', kwargs={'pk': invoice.id})
-    response = api_client.get(url)
+    response = api_client.get(url, format='json')
 
     assert response.status_code == 200
     assert response.data == {
@@ -59,7 +59,7 @@ def test_invoice_create():
     }
 
     url = reverse('api-invoice-list')
-    response = api_client.post(url, data=invoice_data)
+    response = api_client.post(url, data=invoice_data, format='json')
 
     assert response.status_code == 201, response.data
 
@@ -97,7 +97,7 @@ def test_invoice_create_for_another_owner():
     }
 
     url = reverse('api-invoice-list')
-    response = api_client.post(url, data=invoice_data)
+    response = api_client.post(url, data=invoice_data, format='json')
 
     assert response.status_code == 201, response.data
 
